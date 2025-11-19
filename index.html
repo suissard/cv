@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jérémy Clavier | Psychologue & Développeur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            overflow-x: hidden;
+            cursor: none; /* Custom cursor handling */
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #38bdf8;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            mix-blend-mode: difference;
+        }
+        
+        /* Click Effect Particles */
+        .click-particle {
+            position: fixed;
+            pointer-events: none;
+            background: white;
+            border-radius: 50%;
+            z-index: 9998;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: transform 0.1s;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #38bdf8, #818cf8);
+            transform: translateX(-50%);
+        }
+
+        @media (max-width: 768px) {
+            .timeline-line { left: 20px; }
+            body { cursor: auto; }
+            #cursor { display: none; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Custom Cursor -->
+    <div id="cursor"></div>
+    
+    <!-- 3D Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 p-6 flex justify-between items-center mix-blend-difference text-white">
+        <div class="text-2xl font-bold tracking-tighter">JC.</div>
+        <div class="hidden md:flex space-x-8 font-medium">
+            <a href="#home" class="hover:text-cyan-400 transition">Accueil</a>
+            <a href="#psycho" class="hover:text-cyan-400 transition">Psychologie</a>
+            <a href="#tech" class="hover:text-cyan-400 transition">Tech & VR</a>
+            <a href="#contact" class="hover:text-cyan-400 transition">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="h-screen flex flex-col justify-center items-center text-center px-4 relative">
+        <div class="gsap-hero opacity-0 translate-y-10">
+            <h2 class="text-cyan-400 text-xl md:text-2xl font-medium mb-4 tracking-widest uppercase">Portfolio Interactif</h2>
+            <h1 class="text-5xl md:text-8xl font-bold mb-6 leading-tight">
+                JÉRÉMY <br> <span class="gradient-text">CLAVIER</span>
+            </h1>
+            <p class="text-gray-300 text-lg md:text-2xl max-w-2xl mx-auto mb-10 leading-relaxed">
+                L'intersection unique entre la <span class="text-white font-bold">Psychologie Clinique</span> et l'<span class="text-white font-bold">Ingénierie Numérique</span>.
+            </p>
+            <div class="flex gap-4 justify-center">
+                <a href="#psycho" class="glass-card px-8 py-4 rounded-full font-bold hover:bg-white hover:text-black transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-brain mr-2"></i> Expert Cognitif
+                </a>
+                <a href="#tech" class="glass-card px-8 py-4 rounded-full font-bold hover:bg-cyan-500 hover:text-white transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-code mr-2"></i> Développeur
+                </a>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 animate-bounce">
+            <i class="fas fa-chevron-down text-3xl text-cyan-400"></i>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="container mx-auto px-4 py-20">
+
+        <!-- Section 1: Psychologie (Timeline style) -->
+        <section id="psycho" class="min-h-screen py-20 relative">
+            <h2 class="text-4xl md:text-6xl font-bold mb-20 text-center gsap-title">
+                <span class="text-cyan-400">01.</span> Psychologie & Recherche
+            </h2>
+
+            <div class="relative">
+                <div class="timeline-line"></div>
+
+                <!-- Item 1 -->
+                <div class="mb-16 flex justify-between items-center w-full flex-col md:flex-row gsap-item">
+                    <div class="order-1 md:w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-cyan-500 shadow-xl w-8 h-8 rounded-full"></div>
+                    <div class="order-1 bg-gray-900 rounded-xl shadow-xl md:w-5/12 px-6 py-6 glass-card tilt-card">
+                        <h3 class="font-bold text-gray-100 text-xl mb-1">Psychologue en EHPAD</h3>
+                        <p class="text-cyan-400 text-sm mb-2">2020 - Présent</p>
+                        <p class="text-gray-300 leading-snug">
+                            Accompagnement clinique. Intégration innovante de la <strong class="text-white">Réalité Virtuelle</strong> pour le voyage thérapeutique et la stimulation cognitive des résidents.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="mb-16 flex justify-between items-center w-full flex-col md:flex-row-reverse gsap-item">
+                    <div class="order-1 md:w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-purple-500 shadow-xl w-8 h-8 rounded-full"></div>
+                    <div class="order-1 bg-gray-900 rounded-xl shadow-xl md:w-5/12 px-6 py-6 glass-card tilt-card">
+                        <h3 class="font-bold text-gray-100 text-xl mb-1">Enseignement & Formation</h3>
+                        <p class="text-purple-400 text-sm mb-2">Faculté de Nantes & Formation Pro</p>
+                        <p class="text-gray-300 leading-snug">
+                            Chargé de cours en psychologie. Animation de formations spécialisées sur le vieillissement normal et pathologique.
+                        </p>
+                    </div>
+                </div>
+
+                 <!-- Item 3 -->
+                 <div class="mb-16 flex justify-between items-center w-full flex-col md:flex-row gsap-item">
+                    <div class="order-1 md:w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-cyan-500 shadow-xl w-8 h-8 rounded-full"></div>
+                    <div class="order-1 bg-gray-900 rounded-xl shadow-xl md:w-5/12 px-6 py-6 glass-card tilt-card">
+                        <h3 class="font-bold text-gray-100 text-xl mb-1">Expertise Cognitive</h3>
+                        <p class="text-cyan-400 text-sm mb-2">Recherche & Pratique</p>
+                        <p class="text-gray-300 leading-snug">
+                            Maîtrise avancée des évaluations cognitives. Travaux de recherche sur les stratégies de <strong>régulation émotionnelle</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Tech & Dev (Grid Style) -->
+        <section id="tech" class="min-h-screen py-20">
+            <h2 class="text-4xl md:text-6xl font-bold mb-16 text-center gsap-title">
+                <span class="text-purple-400">02.</span> Tech & E-Sport
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Card Project 1 -->
+                <div class="glass-card p-8 rounded-2xl tilt-card group relative overflow-hidden gsap-item">
+                    <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition duration-500">
+                        <i class="fas fa-gamepad text-6xl text-cyan-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 group-hover:text-cyan-400 transition">PlayAllForOne</h3>
+                    <p class="text-sm text-gray-400 mb-4">Fondateur & Lead Dev</p>
+                    <p class="text-gray-300 mb-6">Programmation d'applications complètes pour l'E-sport et la gestion de compétitions.</p>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="bg-cyan-900 text-cyan-200 text-xs px-2 py-1 rounded">Web App</span>
+                        <span class="bg-cyan-900 text-cyan-200 text-xs px-2 py-1 rounded">Gestion Tournoi</span>
+                    </div>
+                    <a href="https://playallforone.com" target="_blank" class="inline-block border border-cyan-400 text-cyan-400 px-6 py-2 rounded-full hover:bg-cyan-400 hover:text-black transition">Visiter le site</a>
+                </div>
+
+                <!-- Card Project 2 -->
+                <div class="glass-card p-8 rounded-2xl tilt-card group relative overflow-hidden gsap-item">
+                    <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition duration-500">
+                        <i class="fab fa-discord text-6xl text-purple-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 group-hover:text-purple-400 transition">Bot Discord & Automation</h3>
+                    <p class="text-sm text-gray-400 mb-4">Dev Backend</p>
+                    <p class="text-gray-300 mb-6">Création de bots complexes pour la gestion de communautés et l'automatisation de tâches serveurs.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-purple-900 text-purple-200 text-xs px-2 py-1 rounded">Node.js</span>
+                        <span class="bg-purple-900 text-purple-200 text-xs px-2 py-1 rounded">Discord.js</span>
+                        <span class="bg-purple-900 text-purple-200 text-xs px-2 py-1 rounded">API</span>
+                    </div>
+                </div>
+
+                <!-- Card Project 3 -->
+                <div class="glass-card p-8 rounded-2xl tilt-card group relative overflow-hidden col-span-1 md:col-span-2 border-l-4 border-pink-500 gsap-item">
+                    <div class="flex flex-col md:flex-row items-center gap-8">
+                        <div class="flex-1">
+                            <h3 class="text-3xl font-bold mb-4 text-white"><i class="fas fa-vr-cardboard mr-3 text-pink-500"></i>Le Futur : Développement VR</h3>
+                            <p class="text-gray-300 text-lg">
+                                Fusion des compétences : Développement d'expériences immersives thérapeutiques.
+                                Initiation actuelle à la programmation d'environnements VR pour repousser les limites de la thérapie traditionnelle.
+                            </p>
+                        </div>
+                        <div class="flex gap-4 text-4xl text-gray-500">
+                            <i class="fab fa-unity hover:text-white transition"></i>
+                            <i class="fas fa-cube hover:text-white transition"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer/Contact -->
+        <section id="contact" class="py-20 text-center">
+            <h2 class="text-3xl font-bold mb-8">Prêt à collaborer ?</h2>
+            <p class="text-gray-400 mb-8 max-w-xl mx-auto">Que ce soit pour une expertise clinique, un projet web ou une innovation en réalité virtuelle.</p>
+            <div class="flex justify-center gap-6">
+                <a href="#" class="text-3xl hover:text-cyan-400 transition transform hover:scale-125"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="text-3xl hover:text-cyan-400 transition transform hover:scale-125"><i class="fab fa-github"></i></a>
+                <a href="mailto:contact@playallforone.com" class="text-3xl hover:text-cyan-400 transition transform hover:scale-125"><i class="fas fa-envelope"></i></a>
+            </div>
+            <p class="mt-12 text-gray-600 text-sm">© 2024 Jérémy Clavier. Designé & Codé avec passion.</p>
+        </section>
+    </main>
+
+    <script>
+        // --- 1. THREE.JS BACKGROUND ANIMATION ---
+        const initThreeJS = () => {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Create Particles (representing Neurons/Nodes)
+            const geometry = new THREE.BufferGeometry();
+            const count = 1000; // Number of particles
+            const positions = new Float32Array(count * 3);
+            
+            for(let i = 0; i < count * 3; i++) {
+                positions[i] = (Math.random() - 0.5) * 15; // Spread
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.03,
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            // Connecting lines (Neural Network effect) - heavy for CPU, keeping it simple with points only or very few lines
+            // Let's add a wireframe sphere to represent the "World/VR"
+            const sphereGeo = new THREE.IcosahedronGeometry(3, 1);
+            const sphereMat = new THREE.MeshBasicMaterial({ 
+                color: 0x818cf8, 
+                wireframe: true, 
+                transparent: true, 
+                opacity: 0.1 
+            });
+            const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+            scene.add(sphere);
+
+            camera.position.z = 5;
+
+            // Mouse interaction
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - windowHalfX);
+                mouseY = (event.clientY - windowHalfY);
+            });
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+
+                targetX = mouseX * 0.001;
+                targetY = mouseY * 0.001;
+
+                particles.rotation.y += 0.001;
+                particles.rotation.x += 0.001;
+                
+                // Parallax smooth follow
+                particles.rotation.y += 0.05 * (targetX - particles.rotation.y);
+                particles.rotation.x += 0.05 * (targetY - particles.rotation.x);
+
+                sphere.rotation.y -= 0.002;
+                sphere.rotation.x -= 0.002;
+
+                renderer.render(scene, camera);
+            };
+
+            animate();
+
+            // Handle Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        initThreeJS();
+
+        // --- 2. GSAP ANIMATIONS ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero entrance
+        gsap.to(".gsap-hero", {
+            opacity: 1,
+            y: 0,
+            duration: 1.5,
+            ease: "power3.out",
+            stagger: 0.2
+        });
+
+        // Section Titles
+        gsap.utils.toArray('.gsap-title').forEach(title => {
+            gsap.from(title, {
+                scrollTrigger: {
+                    trigger: title,
+                    start: "top 80%",
+                },
+                opacity: 0,
+                y: 50,
+                duration: 1
+            });
+        });
+
+        // Items (Timeline & Cards)
+        gsap.utils.toArray('.gsap-item').forEach((item, i) => {
+            gsap.from(item, {
+                scrollTrigger: {
+                    trigger: item,
+                    start: "top 85%",
+                },
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                delay: i * 0.1
+            });
+        });
+
+        // --- 3. TILT EFFECT FOR CARDS ---
+        const cards = document.querySelectorAll('.tilt-card');
+        
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -5; // -5 deg max tilt
+                const rotateY = ((x - centerX) / centerX) * 5;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            });
+        });
+
+        // --- 4. CUSTOM CURSOR & CLICK EXPLOSION ---
+        const cursor = document.getElementById('cursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Hover effects on links/buttons
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.width = '50px';
+                cursor.style.height = '50px';
+                cursor.style.backgroundColor = 'rgba(255,255,255,0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.width = '20px';
+                cursor.style.height = '20px';
+                cursor.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // Click Particle Explosion
+        document.addEventListener('click', (e) => {
+            // Create 5 particles
+            for(let i=0; i<8; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('click-particle');
+                document.body.appendChild(particle);
+                
+                const size = Math.random() * 8 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${e.clientX}px`;
+                particle.style.top = `${e.clientY}px`;
+                
+                const destX = (Math.random() - 0.5) * 100;
+                const destY = (Math.random() - 0.5) * 100;
+
+                gsap.to(particle, {
+                    x: destX,
+                    y: destY,
+                    opacity: 0,
+                    duration: 0.6,
+                    ease: "power2.out",
+                    onComplete: () => particle.remove()
+                });
+            }
+            
+            // Click animation on cursor
+            gsap.fromTo(cursor, 
+                { scale: 0.5 }, 
+                { scale: 1, duration: 0.3, ease: "elastic.out(1, 0.3)" }
+            );
+        });
+
+    </script>
+</body>
+</html>

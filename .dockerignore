@@ -1,0 +1,5 @@
+node_modules
+.git
+.vscode
+vue-version/node_modules
+vue-version/dist

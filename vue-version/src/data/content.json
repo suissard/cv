@@ -1,0 +1,61 @@
+{
+  "useCases": [
+    {
+      "id": 1,
+      "problem": {
+        "icon": "⏳",
+        "title": "Ne ratez plus aucun client",
+        "description": "Un client vous écrit le samedi soir à 21h. Sans réponse rapide de votre part, il finit par réserver chez votre concurrent le dimanche matin. Vous perdez l'opportunité."
+      },
+      "solution": {
+        "icon": "✨",
+        "title": "La réactivité absolue",
+        "description": "Une réponse automatique intelligente qualifie son besoin immédiatement par messagerie. Le rendez-vous est calé et sécurisé dans votre agenda sans aucune action de votre part."
+      }
+    },
+    {
+      "id": 2,
+      "problem": {
+        "icon": "✍️",
+        "title": "La corvée des fiches clients",
+        "description": "Vous passez de longues heures à recopier manuellement les coordonnées d'un outil à un autre pour créer vos devis, factures et listes de suivi sur Excel."
+      },
+      "solution": {
+        "icon": "⚡",
+        "title": "La synchronisation globale",
+        "description": "Dès qu'un client remplit un formulaire, prend rdv ou règle un acompte, toutes ses données s'écrivent automatiquement au bon endroit. Vos soirées vous appartiennent enfin."
+      }
+    },
+    {
+      "id": 3,
+      "problem": {
+        "icon": "🧘",
+        "title": "La peur constante de l'oubli",
+        "description": "Vous vivez avec cette légère angoisse d'avoir oublié de relancer un devis important envoyé il y a une semaine, ou de ne pas avoir répondu à un e-mail capital."
+      },
+      "solution": {
+        "icon": "💆",
+        "title": "L'esprit 100% serein",
+        "description": "Un système de suivi s'occupe de relancer poliment vos clients à votre place. Vous n'êtes sollicité que lorsqu'un message requiert vraiment votre attention humaine."
+      }
+    }
+  ],
+  "testimonials": [
+    {
+      "id": 1,
+      "text": "\"Avant, je passais mes dimanches soirs à recopier mes fiches chantiers, mettre à jour mon carnet et envoyer des relances de paiement. Depuis l'intervention de Jérémy, tout se synchronise tout seul. J'ai retrouvé mes week-ends en famille.\"",
+      "author": "Stéphane M.",
+      "role": "Artisan Rénovation / PME",
+      "initials": "SM",
+      "colors": "from-cyber-primary to-cyber-secondary"
+    },
+    {
+      "id": 2,
+      "text": "\"Je craignais qu'on m'impose une usine à gaz ou un logiciel hors de prix. Jérémy a simplement connecté mes outils gratuits actuels (Google Docs et WhatsApp). Pas besoin de réinventer la roue pour enfin souffler et gérer mon business sereinement !\"",
+      "author": "Clara D.",
+      "role": "Consultante Indépendante",
+      "initials": "CD",
+      "colors": "from-cyber-secondary to-cyber-accent"
+    }
+  ]
+}

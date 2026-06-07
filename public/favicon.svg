@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <!-- Left hemisphere gradient: Cyan to Indigo -->
+    <linearGradient id="left-grad" x1="60" y1="256" x2="240" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#14b8a6" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+
+    <!-- Right hemisphere gradient: Indigo to Violet -->
+    <linearGradient id="right-grad" x1="272" y1="256" x2="452" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+
+    <!-- Drop shadow filter for a premium glowing/neon look -->
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g filter="url(#neon-glow)">
+    <!-- LEFT HEMISPHERE: Organic Brain Curves -->
+    <!-- Outer boundary -->
+    <path d="M 240, 60 C 130, 60 60, 140 60, 250 C 60, 340 110, 400 170, 430 C 170, 445 190, 452 210, 452 C 230, 452 240, 440 240, 425" 
+          stroke="url(#left-grad)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Inner curves representing frontal/occipital lobes -->
+    <path d="M 240, 130 C 160, 130 110, 180 110, 240 C 110, 270 130, 290 160, 290 C 190, 290 210, 260 220, 240 C 230, 220 240, 220 240, 210" 
+          stroke="url(#left-grad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+          
+    <path d="M 240, 380 C 170, 380 140, 340 140, 290 C 140, 270 160, 250 180, 250 C 210, 250 230, 280 240, 300" 
+          stroke="url(#left-grad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+          
+    <path d="M 240, 330 C 190, 330 180, 350 180, 370 C 180, 395 200, 410 220, 410" 
+          stroke="url(#left-grad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Left hemisphere connection nodes (synaptic bulbs) -->
+    <circle cx="240" cy="210" r="12" fill="url(#left-grad)" />
+    <circle cx="240" cy="300" r="12" fill="url(#left-grad)" />
+    <circle cx="220" cy="410" r="12" fill="url(#left-grad)" />
+
+
+    <!-- RIGHT HEMISPHERE: Mechanical Automation & Circuits -->
+    <!-- Outer boundary with gear teeth and digital 45-degree angles -->
+    <path d="M 272, 60 L 360, 60 L 360, 100 L 410, 150 L 452, 150 L 452, 230 L 402, 280 L 452, 330 L 452, 370 L 402, 420 L 350, 420 L 318, 452 L 272, 452" 
+          stroke="url(#right-grad)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+          
+    <!-- Inner circuit traces with 45-degree turns -->
+    <path d="M 272, 130 L 340, 130 L 370, 160 L 370, 190" 
+          stroke="url(#right-grad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+          
+    <path d="M 272, 210 L 320, 210 L 350, 240 L 390, 240" 
+          stroke="url(#right-grad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+          
+    <path d="M 272, 290 L 330, 290 L 360, 320 L 360, 350" 
+          stroke="url(#right-grad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+          
+    <path d="M 272, 370 L 310, 370 L 330, 390" 
+          stroke="url(#right-grad)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Right hemisphere connection nodes (circuit terminals) -->
+    <circle cx="370" cy="190" r="12" fill="url(#right-grad)" />
+    <circle cx="390" cy="240" r="12" fill="url(#right-grad)" />
+    <circle cx="360" cy="350" r="12" fill="url(#right-grad)" />
+    <circle cx="330" cy="390" r="12" fill="url(#right-grad)" />
+  </g>
+</svg>

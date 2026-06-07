@@ -1,9 +1,9 @@
 # Étape de build
-FROM node:18-alpine AS build-stage
+FROM node:24-alpine AS build-stage
 WORKDIR /app
-COPY vue-version/package*.json ./
+COPY package*.json ./
 RUN npm install
-COPY vue-version/ ./
+COPY . ./
 RUN npm run build
 
 # Étape de production

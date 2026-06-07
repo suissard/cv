@@ -9,61 +9,85 @@
 
       <!-- Côté Gauche : Promesse de sérénité -->
       <div class="lg:col-span-7 flex flex-col justify-center space-y-6 text-left">
-        <div class="inline-flex items-center space-x-2 self-start px-3 py-1 rounded-full glass-card border-white/10 text-xs text-gray-300">
+
+        <!-- Badge top -->
+        <div class="reveal stagger-1 inline-flex items-center space-x-2 self-start px-3 py-1.5 rounded-full glass-card border-white/10 text-xs text-gray-300">
           <span class="w-1.5 h-1.5 rounded-full bg-cyber-accent animate-pulse"></span>
           <span>Libérez-vous enfin du temps de gestion</span>
         </div>
 
+        <!-- Titre principal -->
         <div class="space-y-4">
-          <h1 class="text-3xl sm:text-5xl lg:text-6.5xl font-bold font-display tracking-tight leading-tight text-white">
+          <h1 class="reveal stagger-2 text-3xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight leading-tight text-white">
             Faites votre métier.<br>
-            <span class="bg-gradient-to-r from-cyber-primary via-cyber-secondary to-cyber-accent bg-clip-text text-transparent">
+            <span class="bg-gradient-to-r from-cyber-primary via-cyber-secondary to-cyber-accent bg-clip-text text-transparent gradient-text-animated">
               L'IA s'occupe du reste.
             </span>
           </h1>
-          <p class="text-gray-300 text-sm sm:text-base max-w-xl leading-relaxed">
+          <p class="reveal stagger-3 text-gray-300 text-sm sm:text-base max-w-xl leading-relaxed">
             Indépendants, artisans, PME : je connecte intelligemment vos outils du quotidien pour automatiser vos tâches administratives et répétitives. Zéro oubli, moins de paperasse, l'esprit léger. ☕
           </p>
         </div>
 
+        <!-- Stats rapides -->
+        <div class="reveal stagger-4 flex flex-wrap gap-6 pt-1">
+          <div class="flex items-center space-x-2">
+            <span class="text-2xl font-bold font-display text-white stat-glow">10+</span>
+            <span class="text-[11px] text-gray-400 leading-tight">heures économisées<br>par semaine</span>
+          </div>
+          <div class="w-px h-8 bg-white/10"></div>
+          <div class="flex items-center space-x-2">
+            <span class="text-2xl font-bold font-display text-white stat-glow">0 €</span>
+            <span class="text-[11px] text-gray-400 leading-tight">d'abonnement<br>logiciel imposé</span>
+          </div>
+          <div class="w-px h-8 bg-white/10"></div>
+          <div class="flex items-center space-x-2">
+            <span class="text-2xl font-bold font-display text-white stat-glow">100%</span>
+            <span class="text-[11px] text-gray-400 leading-tight">confidentiel<br>& hébergé en UE</span>
+          </div>
+        </div>
+
         <!-- Call to actions directs -->
-        <div class="flex flex-col sm:flex-row gap-4 pt-2">
-          <a href="#contact" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-xs text-center text-white hover:shadow-xl hover:shadow-cyber-primary/10 hover:scale-[1.02] transition-all">
+        <div class="reveal stagger-5 flex flex-col sm:flex-row gap-4 pt-2">
+          <a href="#contact" class="cta-shimmer px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-center text-white hover:shadow-xl hover:shadow-cyber-primary/20 hover:scale-[1.02] transition-all duration-300">
             🚀 Simplifier mon quotidien maintenant
           </a>
-          <a href="#cas-pratiques" class="px-6 py-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 font-bold text-xs text-center text-white transition-all">
+          <a href="#cas-pratiques" class="px-6 py-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 font-bold text-sm text-center text-white transition-all duration-300">
             💡 Voir des exemples concrets
           </a>
         </div>
       </div>
 
       <!-- Côté Droit : Visualisation de l'intégration -->
-      <div class="lg:col-span-5 w-full">
-        <div class="glass-card p-6 rounded-2xl border-white/10 space-y-5">
+      <div class="lg:col-span-5 w-full reveal-right stagger-3">
+        <div class="glass-card p-6 rounded-2xl border-white/10 space-y-5 glow-hover">
           <h3 class="text-xs font-bold uppercase tracking-wider text-cyber-accent flex items-center justify-between">
             <span>Votre journée automatisée</span>
-            <span class="px-2 py-0.5 rounded bg-cyber-accent/10 text-cyber-accent text-[9px] font-mono">Actif</span>
+            <span class="px-2 py-0.5 rounded bg-cyber-accent/10 text-cyber-accent text-[9px] font-mono flex items-center space-x-1">
+              <span class="w-1 h-1 rounded-full bg-cyber-accent animate-pulse"></span>
+              <span>Actif</span>
+            </span>
           </h3>
           <div class="space-y-3">
-            <div class="flex items-start space-x-3 text-xs bg-white/5 p-3.5 rounded-xl border border-white/5 hover:border-white/10 transition-all">
-              <span class="text-lg">🔗</span>
+            <div class="feature-item flex items-start space-x-3 text-xs bg-white/5 p-3.5 rounded-xl border border-white/5 cursor-default">
+              <span class="text-lg animate-float" style="animation-delay: 0s;">🔗</span>
               <div>
-                <h4 class="font-bold text-white">des outils simples, qui communiquent entre eux</h4>
-                <p class="text-gray-400 text-[11px] mt-0.5">Prise de rdv, factures et fichiers synchronisés instantanément.</p>
+                <h4 class="font-bold text-white text-sm">Des outils simples, qui communiquent entre eux</h4>
+                <p class="text-gray-400 text-xs mt-0.5">Prise de rdv, factures et fichiers synchronisés instantanément.</p>
               </div>
             </div>
-            <div class="flex items-start space-x-3 text-xs bg-white/5 p-3.5 rounded-xl border border-white/5 hover:border-white/10 transition-all">
-              <span class="text-lg">🤖</span>
+            <div class="feature-item flex items-start space-x-3 text-xs bg-white/5 p-3.5 rounded-xl border border-white/5 cursor-default">
+              <span class="text-lg animate-float" style="animation-delay: 1s;">🤖</span>
               <div>
-                <h4 class="font-bold text-white">Zéro prospect oublié</h4>
-                <p class="text-gray-400 text-[11px] mt-0.5">Une IA qualifie les demandes de devis même durant vos rendez-vous.</p>
+                <h4 class="font-bold text-white text-sm">Zéro prospect oublié</h4>
+                <p class="text-gray-400 text-xs mt-0.5">Une IA qualifie les demandes de devis même durant vos rendez-vous.</p>
               </div>
             </div>
-            <div class="flex items-start space-x-3 text-xs bg-white/5 p-3.5 rounded-xl border border-white/5 hover:border-white/10 transition-all">
-              <span class="text-lg">🧘</span>
+            <div class="feature-item flex items-start space-x-3 text-xs bg-white/5 p-3.5 rounded-xl border border-white/5 cursor-default">
+              <span class="text-lg animate-float" style="animation-delay: 2s;">🧘</span>
               <div>
-                <h4 class="font-bold text-white">Concentration maximale</h4>
-                <p class="text-gray-400 text-[11px] mt-0.5">Plus besoin de courir après les relances le soir ou le week-end.</p>
+                <h4 class="font-bold text-white text-sm">Concentration maximale</h4>
+                <p class="text-gray-400 text-xs mt-0.5">Plus besoin de courir après les relances le soir ou le week-end.</p>
               </div>
             </div>
           </div>

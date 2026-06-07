@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>clavier.dev | Assistant intelligent</title>
+    
+    <!-- Normalize CSS pour uniformiser les styles de rendu navigateurs -->
+    <link href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css" rel="stylesheet">
+    <!-- Feuille de style native du widget chat n8n -->
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet">
+    
+    <!-- Google Fonts utilisés sur clavier.dev -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Palette clavier.dev */
+            --bg-base: #030305;
+            --surface-glass: rgba(10, 11, 18, 0.45);
+            --border-glow: rgba(255, 255, 255, 0.06);
+            --color-primary: #6366f1; /* Indigo */
+            --color-secondary: #a855f7; /* Violet */
+            --color-accent: #14b8a6; /* Turquoise */
+            
+            /* Textes */
+            --text-white: #ffffff;
+            --text-light: #f3f4f6;
+            --text-muted: #9ca3af;
+            
+            /* Overrides CSS natifs n8n si présents */
+            --n8n-chat-primary-color: #6366f1;
+            --n8n-chat-bg-color: #030305;
+            --n8n-chat-text-color: #f3f4f6;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-base);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-light);
+            overflow: hidden;
+        }
+
+        #n8n-chat {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Conteneur principal n8n */
+        .n8n-chat.chat-layout {
+            background-color: var(--bg-base) !important;
+            font-family: 'Inter', sans-serif !important;
+            border: none !important;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* En-tête du tchat style cyber */
+        .n8n-chat .chat-header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.08)) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-glow) !important;
+            padding: 20px 24px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .n8n-chat .chat-header h1, 
+        .n8n-chat .chat-heading h1 {
+            font-family: 'Space Grotesk', sans-serif !important;
+            font-weight: 700 !important;
+            font-size: 1.15rem !important;
+            color: var(--text-white) !important;
+            letter-spacing: -0.02em !important;
+            margin: 0 0 4px 0 !important;
+        }
+
+        .n8n-chat .chat-header p {
+            color: var(--text-muted) !important;
+            font-size: 0.8rem !important;
+            margin: 0 !important;
+            font-weight: 400 !important;
+        }
+
+        /* Corps du tchat et liste de messages */
+        .n8n-chat .chat-body {
+            background-color: var(--bg-base) !important;
+            background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.04) 0px, transparent 50%),
+                              radial-gradient(at 100% 100%, rgba(20, 184, 166, 0.03) 0px, transparent 50%);
+            padding: 24px !important;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        /* Personnalisation de la barre de défilement (Scrollbar) */
+        .n8n-chat .chat-body::-webkit-scrollbar {
+            width: 5px;
+        }
+        .n8n-chat .chat-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .n8n-chat .chat-body::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.25);
+            border-radius: 99px;
+        }
+
+        /* Styles génériques des messages */
+        .n8n-chat .chat-message {
+            max-width: 82% !important;
+            padding: 12px 16px !important;
+            font-size: 0.85rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 16px !important;
+            border-radius: 14px !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+            font-weight: 400;
+            transition: all 0.2s ease;
+        }
+
+        /* Message venant de l'IA (Côté gauche) - Style Dev */
+        .n8n-chat .chat-message-from-bot {
+            background: var(--surface-glass) !important;
+            border: 1px solid var(--border-glow) !important;
+            color: var(--text-light) !important;
+            border-bottom-left-radius: 4px !important;
+            margin-right: auto !important;
+            font-family: 'JetBrains Mono', monospace !important; /* Police dev pour l'IA */
+            letter-spacing: -0.01em;
+        }
+
+        /* Message venant de l'utilisateur (Côté droit) */
+        .n8n-chat .chat-message-from-user,
+        .n8n-chat .chat-message-from-visitor {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)) !important;
+            color: var(--text-white) !important;
+            border-bottom-right-radius: 4px !important;
+            margin-left: auto !important;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15) !important;
+        }
+
+        /* Uniformisation des balises HTML à l'intérieur du markdown */
+        .n8n-chat .chat-message-markdown p {
+            margin: 0 !important;
+        }
+        .n8n-chat .chat-message-markdown a {
+            color: var(--color-accent) !important;
+            text-decoration: underline;
+        }
+        /* Style dev pour les blocs de code et balises techniques inline */
+        .n8n-chat .chat-message-markdown code,
+        .n8n-chat .chat-message-markdown pre {
+            font-family: 'JetBrains Mono', monospace !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            padding: 2px 6px !important;
+            border-radius: 4px !important;
+        }
+
+        /* Zone inférieure (Footer) */
+        .n8n-chat .chat-footer {
+            background-color: var(--bg-base) !important;
+            border-top: 1px solid var(--border-glow) !important;
+            padding: 16px 20px !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Élimination complète du fond blanc de l'input imposé par n8n */
+        .n8n-chat .chat-input {
+            border: 1px solid var(--border-glow) !important;
+            background: #0a0b10 !important; /* Devient sombre */
+            background-color: #0a0b10 !important;
+            border-radius: 14px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            padding: 4px !important;
+        }
+
+        .n8n-chat .chat-input:focus-within {
+            border-color: rgba(99, 102, 241, 0.4) !important;
+            background: #0e0f17 !important;
+            background-color: #0e0f17 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12) !important;
+        }
+
+        /* Neutralisation des wrappers d'input n8n */
+        .n8n-chat .chat-inputs {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        /* Zone de saisie - Texte blanc garanti sur fond sombre */
+        .n8n-chat .chat-inputs textarea,
+        .n8n-chat .chat-input textarea,
+        #n8n-chat textarea,
+        textarea[data-test-id="chat-input"] {
+            background: transparent !important;
+            background-color: transparent !important;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 0.85rem !important;
+            padding: 10px 12px !important;
+            border: none !important;
+            outline: none !important;
+            resize: none !important;
+            line-height: 1.4 !important;
+        }
+
+        .n8n-chat .chat-inputs textarea::placeholder {
+            color: rgba(156, 163, 175, 0.4) !important;
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+
+        /* Bouton d'envoi */
+        .n8n-chat .chat-input-send-button {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)) !important;
+            color: var(--text-white) !important;
+            border-radius: 10px !important;
+            width: 36px !important;
+            height: 36px !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border: none !important;
+            cursor: pointer !important;
+            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.2) !important;
+        }
+
+        .n8n-chat .chat-input-send-button:hover:not(:disabled) {
+            transform: scale(1.05) !important;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;
+        }
+
+        .n8n-chat .chat-input-send-button:active:not(:disabled) {
+            transform: scale(0.95) !important;
+        }
+
+        /* Bouton désactivé (quand vide) */
+        .n8n-chat .chat-input-send-button:disabled {
+            background: rgba(255, 255, 255, 0.04) !important;
+            color: rgba(255, 255, 255, 0.15) !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="n8n-chat"></div>
+
+    <script type="module">
+        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+        (async function () {
+            const authentication = 'none';
+            let metadata;
+            if (authentication === 'n8nUserAuth') {
+                try {
+                    const response = await fetch('/rest/login', {
+                        method: 'GET',
+                        headers: { 'browser-id': localStorage.getItem('n8n-browserId') }
+                    });
+
+                    if (response.status !== 200) {
+                        throw new Error('Non connecté');
+                    }
+
+                    const responseData = await response.json();
+                    metadata = {
+                        user: {
+                            id: responseData.data.id,
+                            firstName: responseData.data.firstName,
+                            lastName: responseData.data.lastName,
+                            email: responseData.data.email,
+                        },
+                    };
+                } catch (error) {
+                    window.location.href = '/signin?redirect=' + window.location.href;
+                    return;
+                }
+            }
+
+            // Génération du Widget de Chat avec l'URL webhook de Jérémy
+            createChat({
+                mode: 'fullscreen',
+                webhookUrl: 'https://n8n.clavier.dev/webhook/018653bb-fe00-4f2b-915b-b23a201afcb8/chat',
+                showWelcomeScreen: false,
+                loadPreviousSession: false,
+                metadata: metadata,
+                webhookConfig: {
+                    headers: {
+                        'X-Instance-Id': '2b8a9ae1093cca13e275d12302448f51a2f59dc10bdfe2f99afb7073096f27e1',
+                    }
+                },
+                allowFileUploads: false,
+                allowedFilesMimeTypes: "",
+                i18n: {
+                    en: {
+                        title: 'Bonjour',
+                        subtitle: 'Je suis là pour aider a transformer vos idées en réalités !',
+                        messagePlaceholder: 'Posez votre question ici...',
+                        inputPlaceholder: 'Posez votre question ici...',
+                        sendButtonTooltip: 'Envoyer le message',
+                    },
+                    fr: {
+                        title: 'Bonjour',
+                        subtitle: 'Je suis là pour aider a transformer vos idées en réalités !',
+                        messagePlaceholder: 'Posez votre question ici...',
+                        inputPlaceholder: 'Posez votre question ici...',
+                        sendButtonTooltip: 'Envoyer le message',
+                    }
+                },
+                initialMessages: [
+                    "Comment souhaitez vous améliorer votre quotidien ?"
+                ],
+                enableStreaming: false,
+            });
+
+            // ----------------------------------------------------
+            // SIMULATION DE FRAPPE PROGRESSIVE (TYPEWRITER)
+            // ----------------------------------------------------
+            function typewrite(element) {
+                if (element.dataset.typed === "true") return;
+                element.dataset.typed = "true";
+                
+                const html = element.innerHTML;
+                element.innerHTML = "";
+                let i = 0;
+                let isTag = false;
+                
+                function draw() {
+                    if (i >= html.length) return;
+                    const char = html[i];
+                    if (char === "<") isTag = true;
+                    if (char === ">") {
+                        isTag = false;
+                        element.innerHTML = html.substring(0, i + 1);
+                        i++;
+                        draw();
+                        return;
+                    }
+                    
+                    element.innerHTML = html.substring(0, i + 1);
+                    i++;
+                    
+                    if (isTag) {
+                        draw(); // Écrit instantanément les balises HTML sans délai
+                    } else {
+                        setTimeout(draw, 10); // Vitesse de frappe fluide (10ms par caractère)
+                    }
+                }
+                draw();
+            }
+
+            // MutationObserver pour intercepter et animer chaque nouveau message reçu de l'IA
+            const observer = new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                    for (const node of mutation.addedNodes) {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            // Cibler les messages du bot
+                            if (node.classList.contains('chat-message-from-bot')) {
+                                const msgMarkdown = node.querySelector('.chat-message-markdown');
+                                if (msgMarkdown) typewrite(msgMarkdown);
+                            } else {
+                                const botMessages = node.querySelectorAll('.chat-message-from-bot .chat-message-markdown');
+                                botMessages.forEach(msg => typewrite(msg));
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Lancer l'observation de la fenêtre de chat
+            const startObservation = () => {
+                const chatBody = document.querySelector('.chat-body');
+                if (chatBody) {
+                    observer.observe(chatBody, { childList: true, subtree: true });
+                } else {
+                    setTimeout(startObservation, 200);
+                }
+            };
+            startObservation();
+
+        })();
+    </script>
+</body>
+</html>

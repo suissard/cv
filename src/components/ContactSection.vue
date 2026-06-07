@@ -32,11 +32,16 @@
                 <span>Assistant IA</span>
               </button>
               <button
-                :class="['contact-tab', { 'contact-tab--active': activeTab === 'form' }]"
+                :class="['contact-tab', 'contact-tab-form', { 'contact-tab--active': activeTab === 'form' }]"
                 @click="activeTab = 'form'"
               >
                 <span class="contact-tab__icon">📋</span>
                 <span>Formulaire</span>
+                <!-- Active/pulse indicator when not selected to invite user to click it -->
+                <span v-if="activeTab !== 'form'" class="relative flex h-1.5 w-1.5 ml-1">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-accent opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyber-accent"></span>
+                </span>
               </button>
             </div>
           </div>
@@ -47,50 +52,123 @@
         </div>
 
         <!-- TAB: Chat -->
-        <div v-show="activeTab === 'chat'" class="contact-iframe-wrapper">
-          <iframe
-            ref="chatIframe"
-            src="/chat.html?v=1"
-            class="contact-iframe"
-            title="Cadrage de projet intelligent"
-            @load="onIframeLoad"
-          ></iframe>
+        <div v-show="activeTab === 'chat'" class="w-full">
+          <ChatWidget @switch-tab="activeTab = $event" />
         </div>
 
         <!-- TAB: Formulaire -->
         <div v-show="activeTab === 'form'" class="p-6 sm:p-8">
-          <form id="contactForm" class="space-y-5" @submit.prevent="handleFormSubmit">
+          <form id="contactForm" class="space-y-6" @submit.prevent="handleFormSubmit">
             <div class="border-b border-white/5 pb-4 text-center">
-              <p class="text-sm text-gray-400 font-medium">
-                Passez de l'<span class="bg-gradient-to-r from-cyber-primary to-cyber-secondary bg-clip-text text-transparent font-bold">idée</span>, à la <span class="bg-gradient-to-r from-cyber-secondary to-cyber-accent bg-clip-text text-transparent font-bold">réalité</span> ! ✨
+              <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-2">
+                Étape {{ currentStep }} sur 2
+              </p>
+              
+              <!-- Progress indicator dots/bar -->
+              <div class="flex items-center justify-center gap-2 max-w-xs mx-auto mb-3">
+                <button
+                  type="button"
+                  @click="goToStep(1)"
+                  :class="['h-1.5 rounded-full transition-all duration-300', 
+                    currentStep === 1 ? 'w-10 bg-cyber-primary' : 'w-4 bg-white/10 hover:bg-white/20']"
+                  title="Étape 1 : Rédiger son projet"
+                ></button>
+                <button
+                  type="button"
+                  @click="isStep1Valid && goToStep(2)"
+                  :disabled="!isStep1Valid"
+                  :class="['h-1.5 rounded-full transition-all duration-300', 
+                    currentStep === 2 ? 'w-10 bg-cyber-secondary' : 'w-4 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed']"
+                  title="Étape 2 : Indiquer son e-mail"
+                ></button>
+              </div>
+
+              <p class="text-xs text-gray-400">
+                <span v-if="currentStep === 1" class="text-gray-300 font-medium">1. Rédigez votre projet</span>
+                <span v-else class="text-gray-300 font-medium">2. Indiquez vos coordonnées</span>
               </p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="space-y-1.5">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Votre Nom / Prénom</label>
-                <input type="text" required v-model="formData.name" placeholder="Ex: Marie" class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300">
+            <!-- Etape 1: Rédiger le projet -->
+            <Transition name="step-slide" mode="out-in">
+              <div v-if="currentStep === 1" :key="1" class="space-y-5">
+                <div class="space-y-1.5">
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Que souhaitez-vous simplifier ?</label>
+                  <input 
+                    type="text" 
+                    required 
+                    v-model="formData.subject" 
+                    placeholder="Ex: Gagner du temps sur mes relances clients" 
+                    class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300"
+                  >
+                </div>
+
+                <div class="space-y-1.5">
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Dites-m'en un peu plus...</label>
+                  <textarea 
+                    required 
+                    v-model="formData.description" 
+                    rows="4" 
+                    placeholder="Ex: J'aimerais qu'après signature de mon devis, une tâche soit créée sur Notion et que ma facture soit générée automatiquement..." 
+                    class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 resize-none"
+                  ></textarea>
+                </div>
+
+                <button 
+                  type="button" 
+                  @click="nextStep"
+                  :disabled="!isStep1Valid"
+                  class="cta-shimmer w-full py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-white hover:shadow-lg hover:shadow-cyber-primary/20 hover:scale-[1.01] transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <span>Continuer ➡️</span>
+                </button>
               </div>
-              <div class="space-y-1.5">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Votre adresse e-mail</label>
-                <input type="email" required v-model="formData.email" placeholder="marie@monactivite.fr" class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300">
+
+              <!-- Etape 2: Indiquer ses coordonnées -->
+              <div v-else-if="currentStep === 2" :key="2" class="space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div class="space-y-1.5">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Votre Nom / Prénom</label>
+                    <input 
+                      type="text" 
+                      required 
+                      v-model="formData.name" 
+                      placeholder="Ex: Marie" 
+                      class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300"
+                    >
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Votre adresse e-mail</label>
+                    <input 
+                      type="email" 
+                      required 
+                      v-model="formData.email" 
+                      placeholder="marie@monactivite.fr" 
+                      class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300"
+                    >
+                  </div>
+                </div>
+
+                <div class="flex gap-3">
+                  <button 
+                    type="button" 
+                    @click="prevStep"
+                    class="w-1/3 py-3.5 rounded-xl bg-white/5 border border-white/10 font-bold text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-300 flex items-center justify-center space-x-2 cursor-pointer"
+                  >
+                    <span>⬅️ Retour</span>
+                  </button>
+                  
+                  <button 
+                    type="submit" 
+                    :disabled="isSubmitting || !isStep2Valid"
+                    class="cta-shimmer flex-1 py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-white hover:shadow-lg hover:shadow-cyber-primary/20 hover:scale-[1.01] transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    <span v-if="!isSubmitting">⚡ Envoyer mon projet</span>
+                    <span v-else><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Envoi en cours...</span>
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div class="space-y-1.5">
-              <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Que souhaitez-vous simplifier ?</label>
-              <input type="text" required v-model="formData.subject" placeholder="Ex: Gagner du temps sur mes relances clients" class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300">
-            </div>
-
-            <div class="space-y-1.5">
-              <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Dites-m'en un peu plus...</label>
-              <textarea required v-model="formData.description" rows="4" placeholder="Ex: J'aimerais qu'après signature de mon devis, une tâche soit créée sur Notion et que ma facture soit générée automatiquement..." class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 resize-none"></textarea>
-            </div>
-
-            <button type="submit" :disabled="isSubmitting" class="cta-shimmer w-full py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-white hover:shadow-lg hover:shadow-cyber-primary/20 hover:scale-[1.01] transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
-              <span v-if="!isSubmitting">⚡ Envoyer mon projet</span>
-              <span v-else><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Envoi en cours...</span>
-            </button>
+            </Transition>
           </form>
 
           <!-- Notification Box Moderne de Succès/Erreur -->
@@ -105,11 +183,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed } from 'vue';
+import ChatWidget from './ChatWidget.vue';
 
 const activeTab = ref('chat');
-const chatIframe = ref(null);
-const iframeHeight = ref(550);
 
 const formData = ref({
   name: '',
@@ -120,29 +197,36 @@ const formData = ref({
 
 const isSubmitting = ref(false);
 const feedback = ref(null);
+const currentStep = ref(1);
 
-/* ─── Iframe auto-resize ─── */
-const handleIframeMessage = (event) => {
-  // Listen for resize messages from the iframe content
-  if (event.data && event.data.type === 'resize' && event.data.height) {
-    iframeHeight.value = Math.max(400, event.data.height);
-    if (chatIframe.value) {
-      chatIframe.value.style.height = iframeHeight.value + 'px';
-    }
+/* ─── Validation ─── */
+const isStep1Valid = computed(() => {
+  return formData.value.subject.trim() !== '' && formData.value.description.trim() !== '';
+});
+
+const isStep2Valid = computed(() => {
+  return formData.value.name.trim() !== '' && 
+         formData.value.email.trim() !== '' && 
+         formData.value.email.includes('@');
+});
+
+const nextStep = () => {
+  if (isStep1Valid.value) {
+    currentStep.value = 2;
   }
 };
 
-const onIframeLoad = () => {
-  // Same-origin iframe loaded. Height is fixed at 550px for scrolling internal widget.
+const prevStep = () => {
+  currentStep.value = 1;
 };
 
-onMounted(() => {
-  window.addEventListener('message', handleIframeMessage);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('message', handleIframeMessage);
-});
+const goToStep = (step) => {
+  if (step === 1) {
+    currentStep.value = 1;
+  } else if (step === 2 && isStep1Valid.value) {
+    currentStep.value = 2;
+  }
+};
 
 /* ─── Form submission ─── */
 const handleFormSubmit = async () => {
@@ -169,6 +253,7 @@ const handleFormSubmit = async () => {
         className: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
       };
       formData.value = { name: '', email: '', subject: '', description: '' };
+      currentStep.value = 1;
     }
   } catch (error) {
     console.error("Erreur de transmission :", error);
@@ -194,10 +279,12 @@ const handleFormSubmit = async () => {
 /* ─── Tab System ─── */
 .contact-tabs {
   display: flex;
-  gap: 2px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-  padding: 2px;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 3px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .contact-tab {
@@ -205,10 +292,10 @@ const handleFormSubmit = async () => {
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  border-radius: 6px;
-  border: none;
+  border-radius: 7px;
+  border: 1px solid transparent;
   background: transparent;
-  color: rgba(156, 163, 175, 0.7);
+  color: rgba(156, 163, 175, 0.75);
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
@@ -218,37 +305,45 @@ const handleFormSubmit = async () => {
 }
 
 .contact-tab:hover {
-  color: rgba(255, 255, 255, 0.8);
+  color: #fff;
   background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.05);
 }
 
 .contact-tab--active {
   color: #fff;
-  background: rgba(99, 102, 241, 0.15);
-  box-shadow: 0 0 12px -3px rgba(99, 102, 241, 0.25);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.18) 100%);
+  border-color: rgba(168, 85, 247, 0.35);
+  box-shadow: 0 0 14px -3px rgba(168, 85, 247, 0.25);
+}
+
+.contact-tab-form:not(.contact-tab--active) {
+  /* Subtle highlight for the Form tab even when inactive */
+  border-color: rgba(20, 184, 166, 0.15);
+  background: rgba(20, 184, 166, 0.02);
+}
+
+.contact-tab-form:not(.contact-tab--active):hover {
+  border-color: rgba(20, 184, 166, 0.3);
+  background: rgba(20, 184, 166, 0.06);
 }
 
 .contact-tab__icon {
   font-size: 13px;
 }
 
-/* ─── Iframe auto-resize wrapper ─── */
-.contact-iframe-wrapper {
-  width: 100%;
-  min-height: 400px;
-  max-height: 700px;
-  overflow: hidden;
-  background: rgba(13, 14, 21, 0.4);
-  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+/* ─── Step Transitions ─── */
+.step-slide-enter-active,
+.step-slide-leave-active {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.contact-iframe {
-  width: 100%;
-  height: 550px;
-  min-height: 400px;
-  border: none;
-  display: block;
-  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.step-slide-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+.step-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
 }
 
 /* ─── Feedback transitions ─── */

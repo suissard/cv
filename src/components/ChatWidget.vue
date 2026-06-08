@@ -111,16 +111,7 @@
               </button>
             </div>
             
-            <!-- Floating action bar -->
-            <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-2 mt-1 ml-1">
-              <button 
-                @click="copyToClipboard(msg.text, msg.id)" 
-                class="text-[10px] text-gray-500 hover:text-cyber-accent flex items-center gap-1 bg-white/[0.02] hover:bg-white/[0.06] px-2 py-0.5 rounded border border-white/5 transition-all duration-200"
-              >
-                <i :class="copiedId === msg.id ? 'fa-solid fa-check text-emerald-400' : 'fa-regular fa-copy'"></i>
-                <span>{{ copiedId === msg.id ? 'Copié !' : 'Copier' }}</span>
-              </button>
-            </div>
+
           </div>
         </div>
       </div>
@@ -185,6 +176,7 @@
 import { ref, onMounted, nextTick, computed, onBeforeUnmount } from 'vue';
 import { marked } from 'marked';
 import TypewriterText from './TypewriterText.vue';
+import suggestionsConfig from '../data/suggestions.json';
 
 const emit = defineEmits(['switch-tab', 'prefill-form']);
 
@@ -204,7 +196,6 @@ const messagesContainer = ref(null);
 const textareaRef = ref(null);
 const inputValue = ref('');
 const isLoading = ref(false);
-const copiedId = ref(null);
 
 // n8n Webhook configuration
 const webhookUrl = 'https://n8n.clavier.dev/webhook/018653bb-fe00-4f2b-915b-b23a201afcb8/chat';
@@ -213,12 +204,7 @@ const headers = {
   'X-Instance-Id': '2b8a9ae1093cca13e275d12302448f51a2f59dc10bdfe2f99afb7073096f27e1'
 };
 
-const suggestionPills = [
-  "💡 Que peux-tu faire pour moi ?",
-  "⚡ Exemples d'automatisations",
-  "💰 Quels sont tes tarifs ?",
-  "📅 Prendre un rendez-vous"
-];
+const suggestionPills = Object.keys(suggestionsConfig.defaultResponses || {});
 
 // Session ID logic
 const getSessionId = () => {
@@ -235,8 +221,8 @@ const messages = ref([
   {
     id: 'welcome',
     sender: 'bot',
-    text: "Comment souhaitez vous améliorer votre quotidien ?",
-    html: '<p>Comment souhaitez vous améliorer votre quotidien ?</p>',
+    text: suggestionsConfig.welcomeMessage,
+    html: `<p>${suggestionsConfig.welcomeMessage}</p>`,
     animate: true
   }
 ]);
@@ -297,17 +283,26 @@ const resetChat = () => {
   startAutoScroll();
 };
 
-// Copy bubble to clipboard
-const copyToClipboard = async (text, msgId) => {
-  try {
-    await navigator.clipboard.writeText(text);
-    copiedId.value = msgId;
-    setTimeout(() => {
-      if (copiedId.value === msgId) copiedId.value = null;
-    }, 2000);
-  } catch (err) {
-    console.error('Erreur de copie:', err);
-  }
+
+
+const cleanStringForMatching = (str) => {
+  return str
+    .replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, '')
+    .toLowerCase()
+    .trim();
+};
+
+// Find static default response from config JSON (exact match only)
+const findDefaultResponse = (text) => {
+  if (!suggestionsConfig.defaultResponses) return null;
+  const cleanedQuery = cleanStringForMatching(text);
+  
+  // Find key that matches exactly after stripping emojis
+  const matchKey = Object.keys(suggestionsConfig.defaultResponses).find(
+    key => cleanStringForMatching(key) === cleanedQuery
+  );
+  
+  return matchKey ? suggestionsConfig.defaultResponses[matchKey] : null;
 };
 
 // Send message
@@ -331,6 +326,30 @@ const sendMessage = async (text) => {
   // Reset textarea height
   if (textareaRef.value) {
     textareaRef.value.style.height = 'auto';
+  }
+
+  // Check if we have a matching local default response
+  const defaultReply = findDefaultResponse(cleanText);
+  if (defaultReply) {
+    try {
+      // Simulate fake network thinking time
+      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 500));
+      
+      messages.value.push({
+        id: 'bot-' + Date.now(),
+        sender: 'bot',
+        text: defaultReply,
+        html: marked.parse(defaultReply),
+        animate: true,
+        structuredData: null
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      isLoading.value = false;
+      startAutoScroll();
+    }
+    return;
   }
 
   const payload = {
@@ -411,9 +430,7 @@ const submitMessage = () => {
 
 // Send suggestion pill
 const sendSuggestion = (pillText) => {
-  // Strip the emoji from suggestion if we want, or send directly
-  const cleanText = pillText.replace(/^[\p{Emoji}\s]+/u, '');
-  sendMessage(cleanText);
+  sendMessage(pillText);
 };
 
 // Input box Enter key handler

@@ -138,7 +138,6 @@
                   <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Que souhaitez-vous simplifier ?</label>
                   <input 
                     type="text" 
-                    required 
                     v-model="formData.subject" 
                     placeholder="Ex: Gagner du temps sur mes relances clients" 
                     class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300"
@@ -165,7 +164,6 @@
                         <span>⚠️ Situation actuelle (Pain points)</span>
                       </label>
                       <textarea 
-                        required 
                         v-model="formData.situation_actuelle" 
                         rows="3" 
                         placeholder="Ex: Les clients oublient les RDV, je dois les relancer un par un par SMS manuellement." 
@@ -178,7 +176,6 @@
                         <span>⚙️ Solution souhaitée</span>
                       </label>
                       <textarea 
-                        required 
                         v-model="formData.solution_automatisee" 
                         rows="3" 
                         placeholder="Ex: Envoi automatique de rappels par SMS et invitation calendrier (ICS) 24h avant." 
@@ -328,9 +325,10 @@ onMounted(() => {
 /* ─── Validation ─── */
 const isStep1Valid = computed(() => {
   if (isStructuredForm.value) {
-    return formData.value.subject.trim() !== '' && 
-           formData.value.situation_actuelle.trim() !== '' && 
-           formData.value.solution_automatisee.trim() !== '';
+    return formData.value.subject.trim() !== '' || 
+           formData.value.situation_actuelle.trim() !== '' || 
+           formData.value.solution_automatisee.trim() !== '' ||
+           formData.value.impact_serenite.trim() !== '';
   } else {
     return formData.value.description.trim() !== '';
   }
@@ -422,8 +420,10 @@ const handleFormSubmit = async () => {
   const n8nWebhookUrl = "https://n8n.clavier.dev/webhook/clavierDevForm";
 
   const payload = {
-    ...formData.value,
-    isStructured: isStructuredForm.value
+    name: formData.value.name,
+    email: formData.value.email,
+    subject: formData.value.subject,
+    description: formData.value.description
   };
 
   try {
@@ -487,9 +487,6 @@ ${formData.value.email || ''}`;
                 <a href="${mailtoUrl}" class="px-3.5 py-2 bg-gradient-to-r from-cyber-primary to-cyber-secondary hover:brightness-110 text-white rounded-lg font-bold text-[10px] transition-all hover:scale-[1.02] flex items-center gap-1.5 shadow-md shadow-cyber-primary/20">
                     📧 Envoyer par e-mail direct (Pré-rempli)
                 </a>
-                <button type="button" onclick="navigator.clipboard.writeText(\`${(formData.value.description || 'Description vide').replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)" class="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white rounded-lg font-bold text-[10px] transition-all">
-                    📋 Copier le cahier des charges
-                </button>
             </div>
         </div>
       `,

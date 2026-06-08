@@ -53,9 +53,53 @@
               <div v-else v-html="msg.html"></div>
             </div>
 
-            <!-- CTA form button on the right if "formulaire" is in the message -->
+            <!-- Structured Project Synthesis Card -->
+            <button 
+              v-if="msg.structuredData && !msg.animate" 
+              type="button"
+              @click="prefillForm(msg.structuredData)"
+              class="w-full text-left mt-2 p-2.5 sm:p-3 rounded-xl border border-cyber-accent/30 hover:border-cyber-accent bg-cyber-accent/5 hover:bg-cyber-accent/10 transition-all duration-300 ease-out cursor-pointer group/card flex flex-col gap-2 shadow-md shadow-cyber-accent/5 hover:shadow-cyber-accent/10 active:scale-[0.995] select-none"
+            >
+              <div class="flex items-center justify-between border-b border-cyber-accent/15 pb-1.5 w-full">
+                <div class="flex items-center gap-1.5 text-cyber-accent font-bold text-[10px] uppercase tracking-wider font-display">
+                  <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i>
+                  <span>Synthèse IA (Cliquer pour charger)</span>
+                </div>
+                <span class="text-[8px] bg-cyber-accent/15 text-white px-2 py-0.5 rounded border border-cyber-accent/30 font-bold uppercase tracking-wider font-mono">
+                  Charger 📋
+                </span>
+              </div>
+              
+              <div class="grid grid-cols-[95px_1fr] gap-x-2 gap-y-1.5 text-[11px] leading-relaxed font-sans text-gray-300 w-full">
+                <template v-if="msg.structuredData.titre_projet">
+                  <span class="text-[9px] font-bold text-cyber-primary uppercase tracking-wider flex-shrink-0 pt-0.5">📌 Titre</span>
+                  <span class="text-white font-medium pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.titre_projet }}</span>
+                </template>
+                <template v-if="msg.structuredData.situation_actuelle">
+                  <span class="text-[9px] font-bold text-amber-400 uppercase tracking-wider flex-shrink-0 pt-0.5">⚠️ Situation</span>
+                  <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.situation_actuelle }}</span>
+                </template>
+                <template v-if="msg.structuredData.solution_automatisee">
+                  <span class="text-[9px] font-bold text-cyber-accent uppercase tracking-wider flex-shrink-0 pt-0.5">⚙️ Solution</span>
+                  <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.solution_automatisee }}</span>
+                </template>
+                <template v-if="msg.structuredData.impact_serenite">
+                  <span class="text-[9px] font-bold text-fuchsia-400 uppercase tracking-wider flex-shrink-0 pt-0.5">🧘 Impact</span>
+                  <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.impact_serenite }}</span>
+                </template>
+              </div>
+              
+              <div 
+                class="w-full py-1.5 rounded bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-white text-[10px] flex items-center justify-center gap-1.5 shadow-sm group-hover/card:brightness-110 transition-all"
+              >
+                <span>📋 Charger dans le formulaire</span>
+                <i class="fa-solid fa-arrow-right text-[9px]"></i>
+              </div>
+            </button>
+
+            <!-- CTA form button on the right if "formulaire" is in the message (and no structured card) -->
             <div 
-              v-if="msg.sender === 'bot' && !msg.animate && msg.text && msg.text.toLowerCase().includes('formulaire')" 
+              v-if="msg.sender === 'bot' && !msg.animate && msg.text && msg.text.toLowerCase().includes('formulaire') && !msg.structuredData" 
               class="flex justify-end mt-1.5"
             >
               <button 
@@ -142,7 +186,12 @@ import { ref, onMounted, nextTick, computed, onBeforeUnmount } from 'vue';
 import { marked } from 'marked';
 import TypewriterText from './TypewriterText.vue';
 
-const emit = defineEmits(['switch-tab']);
+const emit = defineEmits(['switch-tab', 'prefill-form']);
+
+const prefillForm = (data) => {
+  emit('prefill-form', data);
+  emit('switch-tab', 'form');
+};
 
 // Configure marked to open links in a new tab
 const renderer = new marked.Renderer();
@@ -315,12 +364,28 @@ const sendMessage = async (text) => {
       responseText = "Désolé, je n'ai pas reçu de réponse valide du serveur.";
     }
 
+    const formPattern = /===FORM_START===([\s\S]*?)===FORM_END===/;
+    const match = responseText.match(formPattern);
+    let structuredData = null;
+    let cleanResponseText = responseText;
+
+    if (match) {
+      try {
+        structuredData = JSON.parse(match[1].trim());
+        // Clean up responseText for display
+        cleanResponseText = responseText.replace(formPattern, '').trim();
+      } catch (e) {
+        console.error("Erreur de parsing du JSON du formulaire :", e);
+      }
+    }
+
     messages.value.push({
       id: 'bot-' + Date.now(),
       sender: 'bot',
-      text: responseText,
-      html: marked.parse(responseText),
-      animate: true
+      text: cleanResponseText,
+      html: marked.parse(cleanResponseText),
+      animate: true,
+      structuredData: structuredData
     });
 
   } catch (error) {

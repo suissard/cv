@@ -1,5 +1,8 @@
 <template>
-  <div class="chat-container flex flex-col h-[550px] bg-dark-base rounded-b-2xl overflow-hidden relative font-sans text-gray-200">
+  <div 
+    class="chat-container flex flex-col h-[550px] bg-dark-base rounded-b-2xl overflow-hidden relative font-sans text-gray-200"
+    @click="handleContainerClick"
+  >
     
     <!-- Action Toolbar (Floating Top Right) -->
     <div class="absolute top-3 right-3 z-20">
@@ -53,57 +56,17 @@
               <div v-else v-html="msg.html"></div>
             </div>
 
-            <!-- Structured Project Synthesis Card -->
-            <button 
-              v-if="msg.structuredData && !msg.animate" 
-              type="button"
-              @click="prefillForm(msg.structuredData)"
-              class="w-full text-left mt-2 p-2.5 sm:p-3 rounded-xl border border-cyber-accent/30 hover:border-cyber-accent bg-cyber-accent/5 hover:bg-cyber-accent/10 transition-all duration-300 ease-out cursor-pointer group/card flex flex-col gap-2 shadow-md shadow-cyber-accent/5 hover:shadow-cyber-accent/10 active:scale-[0.995] select-none"
-            >
-              <div class="flex items-center justify-between border-b border-cyber-accent/15 pb-1.5 w-full">
-                <div class="flex items-center gap-1.5 text-cyber-accent font-bold text-[10px] uppercase tracking-wider font-display">
-                  <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i>
-                  <span>Synthèse IA (Cliquer pour charger)</span>
-                </div>
-                <span class="text-[8px] bg-cyber-accent/15 text-white px-2 py-0.5 rounded border border-cyber-accent/30 font-bold uppercase tracking-wider font-mono">
-                  Charger 📋
-                </span>
-              </div>
-              
-              <div class="grid grid-cols-[95px_1fr] gap-x-2 gap-y-1.5 text-[11px] leading-relaxed font-sans text-gray-300 w-full">
-                <template v-if="msg.structuredData.titre_projet">
-                  <span class="text-[9px] font-bold text-cyber-primary uppercase tracking-wider flex-shrink-0 pt-0.5">📌 Titre</span>
-                  <span class="text-white font-medium pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.titre_projet }}</span>
-                </template>
-                <template v-if="msg.structuredData.situation_actuelle">
-                  <span class="text-[9px] font-bold text-amber-400 uppercase tracking-wider flex-shrink-0 pt-0.5">⚠️ Situation</span>
-                  <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.situation_actuelle }}</span>
-                </template>
-                <template v-if="msg.structuredData.solution_automatisee">
-                  <span class="text-[9px] font-bold text-cyber-accent uppercase tracking-wider flex-shrink-0 pt-0.5">⚙️ Solution</span>
-                  <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.solution_automatisee }}</span>
-                </template>
-                <template v-if="msg.structuredData.outils_existants">
-                  <span class="text-[9px] font-bold text-sky-400 uppercase tracking-wider flex-shrink-0 pt-0.5">🔧 Outils</span>
-                  <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.outils_existants }}</span>
-                </template>
-                <template v-if="msg.structuredData.volume_estime">
-                  <span class="text-[9px] font-bold text-orange-400 uppercase tracking-wider flex-shrink-0 pt-0.5">📊 Volume</span>
-                  <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.volume_estime }}</span>
-                </template>
-                <template v-if="msg.structuredData.impact_serenite">
-                  <span class="text-[9px] font-bold text-fuchsia-400 uppercase tracking-wider flex-shrink-0 pt-0.5">🧘 Impact</span>
-                  <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.impact_serenite }}</span>
-                </template>
-              </div>
-              
-              <div 
-                class="w-full py-1.5 rounded bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-white text-[10px] flex items-center justify-center gap-1.5 shadow-sm group-hover/card:brightness-110 transition-all"
+            <!-- Structured Project Synthesis Button -->
+            <div v-if="msg.structuredData && !msg.animate" class="flex justify-start mt-1.5">
+              <button 
+                type="button"
+                @click="prefillForm(msg.structuredData)"
+                class="px-3.5 py-1.5 rounded-lg bg-cyber-accent/10 hover:bg-cyber-accent/20 border border-cyber-accent/30 hover:border-cyber-accent text-cyber-accent text-[11px] font-bold transition-all duration-300 flex items-center gap-1.5 shadow-sm shadow-cyber-accent/5 hover:scale-[1.02] cursor-pointer"
               >
-                <span>📋 Charger dans le formulaire</span>
-                <i class="fa-solid fa-arrow-right text-[9px]"></i>
-              </div>
-            </button>
+                <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i>
+                <span>📋 Charger la synthèse dans le formulaire</span>
+              </button>
+            </div>
 
             <!-- CTA form button on the right if "formulaire" is in the message (and no structured card) -->
             <div 
@@ -450,6 +413,18 @@ const onEnterKey = (e) => {
   } else {
     inputValue.value += '\n';
   }
+};
+
+// Focus textarea when clicking container (outside interactive elements)
+const handleContainerClick = (e) => {
+  if (e.target.closest('button, a, textarea, input')) {
+    return;
+  }
+  const selection = window.getSelection();
+  if (selection && selection.toString().trim() !== '') {
+    return;
+  }
+  textareaRef.value?.focus();
 };
 </script>
 

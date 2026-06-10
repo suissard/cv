@@ -1,9 +1,9 @@
 <template>
-  <section class="py-24 relative z-10 px-6 max-w-5xl mx-auto">
+  <section class="py-16 relative z-10 px-6 max-w-5xl mx-auto">
     <!-- Gradient divider -->
-    <div class="section-divider mb-20"></div>
+    <div class="section-divider mb-12"></div>
 
-    <div class="text-center space-y-4 mb-14">
+    <div class="text-center space-y-4 mb-10">
       <span class="reveal badge-pill text-cyber-accent font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border border-cyber-accent/20 bg-cyber-accent/5 inline-block">Retours d'expérience</span>
       <h2 class="reveal stagger-1 text-2xl sm:text-3xl font-bold font-display text-white">Ce qu'ils en disent</h2>
     </div>

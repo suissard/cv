@@ -8,6 +8,8 @@
       <div class="absolute top-[40%] left-[60%] w-[35vw] h-[35vw] rounded-full bg-violet-900/5 blur-[120px] animate-gentle-pulse" style="animation-delay: 3s;"></div>
     </div>
 
+    <Background3D />
+
     <AppHeader />
     <HeroSection />
     <UseCasesSection />
@@ -27,6 +29,7 @@ import TestimonialsSection from './components/TestimonialsSection.vue';
 import ContactSection from './components/ContactSection.vue';
 import AppFooter from './components/AppFooter.vue';
 import LegalModal from './components/LegalModal.vue';
+import Background3D from './components/Background3D.vue';
 
 const isLegalModalOpen = ref(false);
 

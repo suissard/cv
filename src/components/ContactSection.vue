@@ -1,63 +1,58 @@
 <template>
-  <section id="contact" class="py-24 relative z-10 px-6 max-w-4xl mx-auto">
+  <section id="contact" class="py-16 relative z-10 px-6 max-w-7xl mx-auto">
     <!-- Gradient divider -->
-    <div class="section-divider mb-20"></div>
+    <div class="section-divider mb-12"></div>
 
-    <div class="text-center space-y-4 mb-14">
+    <div class="text-center space-y-4 mb-10">
       <span class="reveal badge-pill text-cyber-accent font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border border-cyber-accent/20 bg-cyber-accent/5 inline-block font-display">Lancez-vous</span>
-      <h2 class="reveal stagger-1 text-2xl sm:text-4xl font-bold font-display text-white">Prenez les devants</h2>
+      <h2 class="reveal stagger-1 text-2xl sm:text-4xl font-bold font-display text-white">Passez de l'idée à la réalité !</h2>
       <p class="reveal stagger-2 text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
         Décrivez vos besoins, on les traduira en automatisations. Vous pouvez aussi m'écrire en direct.
       </p>
     </div>
 
-    <!-- Single Card with Tabs -->
-    <div class="reveal stagger-3 w-full">
-      <div class="glass-card rounded-2xl border-white/10 overflow-hidden shadow-2xl relative glow-hover">
+    <!-- Side-by-side layout: Chat + Formulaire -->
+    <div class="reveal stagger-3 contact-layout">
 
-        <!-- Tab Bar + OS dots -->
+      <!-- LEFT: Chat Panel -->
+      <div class="contact-panel contact-panel--chat glass-card rounded-2xl border-white/10 overflow-hidden shadow-2xl relative glow-hover">
+        <!-- Chat Header Bar -->
         <div class="bg-white/[0.02] border-b border-white/5 px-4 py-3 flex items-center justify-between">
           <div class="flex items-center space-x-2">
             <span class="w-2.5 h-2.5 rounded-full bg-red-500/50"></span>
             <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></span>
             <span class="w-2.5 h-2.5 rounded-full bg-green-500/50"></span>
-
-            <!-- Tabs -->
-            <div class="contact-tabs ml-4">
-              <button
-                :class="['contact-tab', { 'contact-tab--active': activeTab === 'chat' }]"
-                @click="activeTab = 'chat'"
-              >
-                <span class="contact-tab__icon">💬</span>
-                <span>Assistant IA</span>
-              </button>
-              <button
-                :class="['contact-tab', 'contact-tab-form', { 'contact-tab--active': activeTab === 'form' }]"
-                @click="activeTab = 'form'"
-              >
-                <span class="contact-tab__icon">📋</span>
-                <span>Formulaire</span>
-                <!-- Active/pulse indicator when not selected to invite user to click it -->
-                <span v-if="activeTab !== 'form'" class="relative flex h-1.5 w-1.5 ml-1">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-accent opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyber-accent"></span>
-                </span>
-              </button>
-            </div>
+            <span class="ml-3 text-[11px] font-semibold text-gray-400 flex items-center gap-1.5">
+              <span>💬</span> Assistant IA
+            </span>
           </div>
-          <div v-if="activeTab === 'chat'" class="flex items-center space-x-1 text-[10px] text-cyber-accent">
+          <div class="flex items-center space-x-1 text-[10px] text-cyber-accent">
             <span class="w-1.5 h-1.5 rounded-full bg-cyber-accent animate-pulse mr-1"></span>
             <span>En ligne</span>
           </div>
         </div>
+        <ChatWidget @switch-tab="() => {}" @prefill-form="handlePrefill" />
+      </div>
 
-        <!-- TAB: Chat -->
-        <div v-show="activeTab === 'chat'" class="w-full">
-          <ChatWidget @switch-tab="activeTab = $event" @prefill-form="handlePrefill" />
+      <!-- RIGHT: Form Panel -->
+      <div ref="formPanelRef" class="contact-panel contact-panel--form glass-card rounded-2xl border-white/10 overflow-hidden shadow-2xl relative glow-hover">
+        <!-- Form Header Bar -->
+        <div class="bg-white/[0.02] border-b border-white/5 px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500/50"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-green-500/50"></span>
+            <span class="ml-3 text-[11px] font-semibold text-gray-400 flex items-center gap-1.5">
+              <span>📋</span> Formulaire
+              <span v-if="isStructuredForm" class="flex h-2 w-2 relative ml-1">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-accent opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-cyber-accent"></span>
+              </span>
+            </span>
+          </div>
         </div>
 
-        <!-- TAB: Formulaire -->
-        <div v-show="activeTab === 'form'" class="p-6 sm:p-8">
+        <div class="p-5 sm:p-6 form-scroll">
           <!-- Panneau de confirmation d'envoi -->
           <div v-if="isSubmitted" class="py-10 flex flex-col items-center text-center space-y-6">
             <div class="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-3xl shadow-lg shadow-emerald-500/5 animate-bounce">
@@ -74,220 +69,172 @@
               @click="resetFormState"
               class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-300 cursor-pointer"
             >
-              💬 Retourner à l'assistant IA
+              🔄 Nouveau projet
             </button>
           </div>
 
-          <form v-else id="contactForm" class="space-y-6" @submit.prevent="handleFormSubmit">
-            <div class="border-b border-white/5 pb-4 text-center">
-              <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-2">
-                Étape {{ currentStep }} sur 2
-              </p>
-              
-              <!-- Progress indicator dots/bar -->
-              <div class="flex items-center justify-center gap-2 max-w-xs mx-auto mb-3">
-                <button
-                  type="button"
-                  @click="goToStep(1)"
-                  :class="['h-1.5 rounded-full transition-all duration-300', 
-                    currentStep === 1 ? 'w-10 bg-cyber-primary' : 'w-4 bg-white/10 hover:bg-white/20']"
-                  title="Étape 1 : Rédiger son projet"
-                ></button>
-                <button
-                  type="button"
-                  @click="isStep1Valid && goToStep(2)"
-                  :disabled="!isStep1Valid"
-                  :class="['h-1.5 rounded-full transition-all duration-300', 
-                    currentStep === 2 ? 'w-10 bg-cyber-secondary' : 'w-4 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed']"
-                  title="Étape 2 : Indiquer son e-mail"
-                ></button>
+          <form v-else id="contactForm" class="space-y-5" @submit.prevent="handleFormSubmit">
+            
+            <!-- Coordonnées: toujours en haut -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="space-y-1.5">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Votre Nom / Prénom</label>
+                <input 
+                  type="text" 
+                  name="name"
+                  autocomplete="name"
+                  required 
+                  v-model="formData.name" 
+                  placeholder="Ex: Marie" 
+                  :class="['w-full px-4 py-2.5 bg-white/5 rounded-xl border focus:outline-none text-sm text-white transition-all duration-300',
+                    attentionFields && !formData.name.trim() ? 'field-attention border-cyber-accent/50' : 'border-white/10 focus:border-cyber-primary/50']"
+                >
               </div>
-
-              <p class="text-xs text-gray-400">
-                <span v-if="currentStep === 1" class="text-gray-300 font-medium">1. Rédigez votre projet</span>
-                <span v-else class="text-gray-300 font-medium">2. Indiquez vos coordonnées</span>
-              </p>
+              <div class="space-y-1.5">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Votre adresse e-mail</label>
+                <input 
+                  type="email" 
+                  name="email"
+                  autocomplete="email"
+                  required 
+                  v-model="formData.email" 
+                  @blur="emailTouched = true"
+                  @input="emailTouched = true"
+                  placeholder="marie@monactivite.fr" 
+                  :class="['w-full px-4 py-2.5 bg-white/5 rounded-xl border focus:outline-none text-sm text-white transition-all duration-300', 
+                    isEmailInvalid ? 'border-red-500/50 focus:border-red-500' : 
+                    attentionFields && !formData.email.trim() ? 'field-attention border-cyber-accent/50' : 'border-white/10 focus:border-cyber-primary/50']"
+                >
+                <span v-if="isEmailInvalid" class="text-[9px] text-red-400 block mt-1">
+                  ⚠️ Format d'e-mail incorrect. Exemple : nom@domaine.fr
+                </span>
+              </div>
             </div>
 
-            <!-- Etape 1: Rédiger le projet -->
-            <Transition name="step-slide" mode="out-in">
-              <div v-if="currentStep === 1" :key="1" class="space-y-5">
-                <!-- Mode Toggle Header -->
-                <div class="flex items-center justify-between pb-2 border-b border-white/5">
-                  <div class="flex items-center gap-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                      {{ isStructuredForm ? '📁 Cahier des charges IA' : '📝 Description simple' }}
-                    </span>
-                    <span v-if="isStructuredForm" class="flex h-2 w-2 relative">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-accent opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-2 w-2 bg-cyber-accent"></span>
-                    </span>
-                  </div>
-                  <button 
-                    type="button" 
-                    @click="toggleFormMode"
-                    class="text-[10px] text-cyber-accent hover:underline flex items-center gap-1.5 bg-cyber-accent/5 px-2.5 py-1 rounded-lg border border-cyber-accent/10 hover:border-cyber-accent/30 hover:bg-cyber-accent/10 transition-all duration-300 cursor-pointer font-sans"
-                  >
-                    <i :class="isStructuredForm ? 'fa-solid fa-toggle-on' : 'fa-solid fa-toggle-off'"></i>
-                    <span>{{ isStructuredForm ? 'Mode Simple' : 'Mode Détaillé' }}</span>
-                  </button>
+            <!-- Séparateur -->
+            <div class="border-t border-white/5 pt-4">
+              <!-- Mode Toggle Header -->
+              <div class="flex items-center justify-between pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                    {{ isStructuredForm ? '📁 Cahier des charges IA' : '📝 Description simple' }}
+                  </span>
                 </div>
+                <button 
+                  type="button" 
+                  @click="toggleFormMode"
+                  class="text-[10px] text-cyber-accent hover:underline flex items-center gap-1.5 bg-cyber-accent/5 px-2.5 py-1 rounded-lg border border-cyber-accent/10 hover:border-cyber-accent/30 hover:bg-cyber-accent/10 transition-all duration-300 cursor-pointer font-sans"
+                >
+                  <i :class="isStructuredForm ? 'fa-solid fa-toggle-on' : 'fa-solid fa-toggle-off'"></i>
+                  <span>{{ isStructuredForm ? 'Mode Simple' : 'Mode Détaillé' }}</span>
+                </button>
+              </div>
 
-                <!-- Input: Subject (Show ONLY when structured mode is active) -->
-                <div v-if="isStructuredForm" class="space-y-1.5">
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Que souhaitez-vous simplifier ?</label>
-                  <input 
-                    type="text" 
-                    v-model="formData.subject" 
-                    placeholder="Ex: Gagner du temps sur mes relances clients" 
-                    class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300"
-                  >
-                </div>
+              <!-- Input: Subject (Show ONLY when structured mode is active) -->
+              <div v-if="isStructuredForm" class="space-y-1.5 mb-4">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Que souhaitez-vous simplifier ?</label>
+                <input 
+                  type="text" 
+                  v-model="formData.subject" 
+                  placeholder="Ex: Gagner du temps sur mes relances clients" 
+                  class="w-full px-4 py-2.5 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300"
+                >
+              </div>
 
-                <!-- Mode 1: Simple Description -->
-                <div v-if="!isStructuredForm" class="space-y-1.5">
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Dites-m'en un peu plus...</label>
-                  <textarea 
-                    required 
-                    v-model="formData.description" 
-                    rows="5" 
-                    placeholder="Ex: J'aimerais qu'après signature de mon devis, une tâche soit créée sur Notion et que ma facture soit générée automatiquement..." 
-                    class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 resize-none font-sans"
-                  ></textarea>
-                </div>
+              <!-- Mode 1: Simple Description -->
+              <div v-if="!isStructuredForm" class="space-y-1.5">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Dites-m'en un peu plus...</label>
+                <textarea 
+                  required 
+                  v-model="formData.description" 
+                  ref="descriptionTextarea"
+                  @input="autoResize($event.target)"
+                  rows="3" 
+                  placeholder="Ex: J'aimerais qu'après signature de mon devis, une tâche soit créée sur Notion et que ma facture soit générée automatiquement..." 
+                  class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 resize-none font-sans auto-textarea"
+                ></textarea>
+              </div>
 
-                <!-- Mode 2: Structured Fields -->
-                <div v-else class="space-y-4">
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="space-y-1.5">
-                      <label class="block text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                        <span>⚠️ Situation actuelle (Pain points)</span>
-                      </label>
-                      <textarea 
-                        v-model="formData.situation_actuelle" 
-                        rows="3" 
-                        placeholder="Ex: Les clients oublient les RDV, je dois les relancer un par un par SMS manuellement." 
-                        class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 resize-none font-sans"
-                      ></textarea>
-                    </div>
-
-                    <div class="space-y-1.5">
-                      <label class="block text-[10px] font-bold uppercase tracking-wider text-cyber-accent flex items-center gap-1">
-                        <span>⚙️ Solution souhaitée</span>
-                      </label>
-                      <textarea 
-                        v-model="formData.solution_automatisee" 
-                        rows="3" 
-                        placeholder="Ex: Envoi automatique de rappels par SMS et invitation calendrier (ICS) 24h avant." 
-                        class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 resize-none font-sans"
-                      ></textarea>
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="space-y-1.5">
-                      <label class="block text-[10px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1">
-                        <span>🔧 Outils déjà utilisés</span>
-                      </label>
-                      <input 
-                        type="text"
-                        v-model="formData.outils_existants" 
-                        placeholder="Ex: Excel, Gmail, Calendly, papier..." 
-                        class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 font-sans"
-                      >
-                    </div>
-
-                    <div class="space-y-1.5">
-                      <label class="block text-[10px] font-bold uppercase tracking-wider text-orange-400 flex items-center gap-1">
-                        <span>📊 Volume / Fréquence</span>
-                      </label>
-                      <input 
-                        type="text"
-                        v-model="formData.volume_estime" 
-                        placeholder="Ex: ~15 factures/mois, 3h/semaine" 
-                        class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 font-sans"
-                      >
-                    </div>
+              <!-- Mode 2: Structured Fields -->
+              <div v-else class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div class="space-y-1.5">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
+                      <span>⚠️ Situation actuelle (Pain points)</span>
+                    </label>
+                    <textarea 
+                      v-model="formData.situation_actuelle" 
+                      @input="autoResize($event.target)"
+                      rows="2" 
+                      placeholder="Ex: Les clients oublient les RDV, je dois les relancer un par un par SMS manuellement." 
+                      class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 resize-none font-sans auto-textarea"
+                    ></textarea>
                   </div>
 
                   <div class="space-y-1.5">
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-fuchsia-400 flex items-center gap-1">
-                      <span>🧘 Bénéfice & Sérénité attendus</span>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-cyber-accent flex items-center gap-1">
+                      <span>⚙️ Solution souhaitée</span>
                     </label>
                     <textarea 
-                      v-model="formData.impact_serenite" 
+                      v-model="formData.solution_automatisee" 
+                      @input="autoResize($event.target)"
                       rows="2" 
-                      placeholder="Ex: Diviser par 4 le taux de rendez-vous manqués et récupérer 2h de libre par semaine." 
-                      class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 resize-none font-sans"
+                      placeholder="Ex: Envoi automatique de rappels par SMS et invitation calendrier (ICS) 24h avant." 
+                      class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 resize-none font-sans auto-textarea"
                     ></textarea>
                   </div>
                 </div>
 
-                <button 
-                  type="button" 
-                  @click="nextStep"
-                  :disabled="!isStep1Valid"
-                  class="cta-shimmer w-full py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-white hover:shadow-lg hover:shadow-cyber-primary/20 hover:scale-[1.01] transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <span>Continuer ➡️</span>
-                </button>
-              </div>
-
-              <!-- Etape 2: Indiquer ses coordonnées -->
-              <div v-else-if="currentStep === 2" :key="2" class="space-y-5">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div class="space-y-1.5">
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Votre Nom / Prénom</label>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1">
+                      <span>🔧 Outils déjà utilisés</span>
+                    </label>
                     <input 
-                      type="text" 
-                      name="name"
-                      autocomplete="name"
-                      required 
-                      v-model="formData.name" 
-                      placeholder="Ex: Marie" 
-                      class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300"
+                      type="text"
+                      v-model="formData.outils_existants" 
+                      placeholder="Ex: Excel, Gmail, Calendly, papier..." 
+                      class="w-full px-4 py-2.5 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 font-sans"
                     >
                   </div>
+
                   <div class="space-y-1.5">
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400">Votre adresse e-mail</label>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-orange-400 flex items-center gap-1">
+                      <span>📊 Volume / Fréquence</span>
+                    </label>
                     <input 
-                      type="email" 
-                      name="email"
-                      autocomplete="email"
-                      required 
-                      v-model="formData.email" 
-                      @blur="emailTouched = true"
-                      @input="emailTouched = true"
-                      placeholder="marie@monactivite.fr" 
-                      :class="['w-full px-4 py-3 bg-white/5 rounded-xl border focus:outline-none text-sm text-white transition-all duration-300', 
-                        isEmailInvalid ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-cyber-primary/50']"
+                      type="text"
+                      v-model="formData.volume_estime" 
+                      placeholder="Ex: ~15 factures/mois, 3h/semaine" 
+                      class="w-full px-4 py-2.5 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 font-sans"
                     >
-                    <span v-if="isEmailInvalid" class="text-[9px] text-red-400 block mt-1">
-                      ⚠️ Format d'e-mail incorrect. Exemple : nom@domaine.fr
-                    </span>
                   </div>
                 </div>
 
-                <div class="flex gap-3">
-                  <button 
-                    type="button" 
-                    @click="prevStep"
-                    class="w-1/3 py-3.5 rounded-xl bg-white/5 border border-white/10 font-bold text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-300 flex items-center justify-center space-x-2 cursor-pointer"
-                  >
-                    <span>⬅️ Retour</span>
-                  </button>
-                  
-                  <button 
-                    type="submit" 
-                    :disabled="isSubmitting || !isStep2Valid"
-                    class="cta-shimmer flex-1 py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-white hover:shadow-lg hover:shadow-cyber-primary/20 hover:scale-[1.01] transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    <span v-if="!isSubmitting">⚡ Envoyer mon projet</span>
-                    <span v-else><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Envoi en cours...</span>
-                  </button>
+                <div class="space-y-1.5">
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-fuchsia-400 flex items-center gap-1">
+                    <span>🧘 Bénéfice & Sérénité attendus</span>
+                  </label>
+                  <textarea 
+                    v-model="formData.impact_serenite" 
+                    @input="autoResize($event.target)"
+                    rows="2" 
+                    placeholder="Ex: Diviser par 4 le taux de rendez-vous manqués et récupérer 2h de libre par semaine." 
+                    class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 resize-none font-sans auto-textarea"
+                  ></textarea>
                 </div>
               </div>
-            </Transition>
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+              type="submit" 
+              :disabled="isSubmitting || !isFormValid"
+              class="cta-shimmer w-full py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-white hover:shadow-lg hover:shadow-cyber-primary/20 hover:scale-[1.01] transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <span v-if="!isSubmitting">⚡ Envoyer mon projet</span>
+              <span v-else><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Envoi en cours...</span>
+            </button>
           </form>
 
           <!-- Notification Box Moderne d'Erreur -->
@@ -295,17 +242,15 @@
             <div v-if="feedback && !isSubmitted" :class="`mt-4 p-5 rounded-xl text-xs font-medium text-center transition-all ${feedback.className}`" v-html="feedback.html"></div>
           </Transition>
         </div>
-
       </div>
+
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import ChatWidget from './ChatWidget.vue';
-
-const activeTab = ref('chat');
 
 const isStructuredForm = ref(false);
 
@@ -323,14 +268,14 @@ const formData = ref({
 
 const isSubmitting = ref(false);
 const feedback = ref(null);
-const currentStep = ref(1);
 const emailTouched = ref(false);
 const isSubmitted = ref(false);
 const savedSubmittedName = ref('');
+const formPanelRef = ref(null);
+const attentionFields = ref(false);
 
 const resetFormState = () => {
   isSubmitted.value = false;
-  activeTab.value = 'chat';
 };
 
 const isValidEmail = (email) => {
@@ -350,8 +295,15 @@ onMounted(() => {
   if (savedEmail) formData.value.email = savedEmail;
 });
 
-/* ─── Validation ─── */
-const isStep1Valid = computed(() => {
+/* ─── Auto-resize textarea ─── */
+const autoResize = (el) => {
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+};
+
+/* ─── Validation: single step ─── */
+const isContentValid = computed(() => {
   if (isStructuredForm.value) {
     return formData.value.subject.trim() !== '' || 
            formData.value.situation_actuelle.trim() !== '' || 
@@ -362,28 +314,11 @@ const isStep1Valid = computed(() => {
   }
 });
 
-const isStep2Valid = computed(() => {
+const isFormValid = computed(() => {
   return formData.value.name.trim() !== '' && 
-         isValidEmail(formData.value.email);
+         isValidEmail(formData.value.email) &&
+         isContentValid.value;
 });
-
-const nextStep = () => {
-  if (isStep1Valid.value) {
-    currentStep.value = 2;
-  }
-};
-
-const prevStep = () => {
-  currentStep.value = 1;
-};
-
-const goToStep = (step) => {
-  if (step === 1) {
-    currentStep.value = 1;
-  } else if (step === 2 && isStep1Valid.value) {
-    currentStep.value = 2;
-  }
-};
 
 /* ─── Mode and Syncing Helpers ─── */
 const syncStructuredToSimple = () => {
@@ -433,8 +368,25 @@ const handlePrefill = (data) => {
   syncStructuredToSimple();
   
   isStructuredForm.value = true;
-  activeTab.value = 'form';
-  currentStep.value = 1;
+
+  // Auto-resize all textareas after prefill
+  nextTick(() => {
+    document.querySelectorAll('.auto-textarea').forEach(el => autoResize(el));
+
+    // Scroll to form panel
+    if (formPanelRef.value) {
+      formPanelRef.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Highlight empty required fields (nom/email)
+    if (!formData.value.name.trim() || !formData.value.email.trim()) {
+      attentionFields.value = true;
+      // Remove the attention effect after 4 seconds
+      setTimeout(() => {
+        attentionFields.value = false;
+      }, 4000);
+    }
+  });
 };
 
 /* ─── Form submission ─── */
@@ -488,7 +440,6 @@ const handleFormSubmit = async () => {
         volume_estime: ''
       };
       isStructuredForm.value = false;
-      currentStep.value = 1;
     } else {
       throw new Error(`HTTP error: ${response.status}`);
     }
@@ -543,74 +494,53 @@ ${formData.value.email || ''}`;
 </script>
 
 <style scoped>
-/* ─── Tab System ─── */
-.contact-tabs {
+/* ─── Side-by-side Layout ─── */
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1023px) {
+  .contact-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contact-panel {
+  min-height: 400px;
   display: flex;
-  gap: 4px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  padding: 3px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  flex-direction: column;
 }
 
-.contact-tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 7px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: rgba(156, 163, 175, 0.75);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  white-space: nowrap;
-  letter-spacing: 0.02em;
+.contact-panel--chat {
+  /* Chat takes remaining height */
 }
 
-.contact-tab:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.05);
+/* ─── Auto-resize textareas ─── */
+.auto-textarea {
+  min-height: 60px;
+  max-height: 240px;
+  overflow-y: auto;
+  transition: height 0.15s ease;
 }
 
-.contact-tab--active {
-  color: #fff;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.18) 100%);
-  border-color: rgba(168, 85, 247, 0.35);
-  box-shadow: 0 0 14px -3px rgba(168, 85, 247, 0.25);
+/* ─── Field attention glow animation ─── */
+.field-attention {
+  animation: fieldGlow 1.2s ease-in-out infinite;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.15);
 }
 
-.contact-tab-form:not(.contact-tab--active) {
-  /* Subtle highlight for the Form tab even when inactive */
-  border-color: rgba(20, 184, 166, 0.15);
-  background: rgba(20, 184, 166, 0.02);
-}
-
-.contact-tab-form:not(.contact-tab--active):hover {
-  border-color: rgba(20, 184, 166, 0.3);
-  background: rgba(20, 184, 166, 0.06);
-}
-
-.contact-tab__icon {
-  font-size: 13px;
-}
-
-/* ─── Step Transitions ─── */
-.step-slide-enter-active,
-.step-slide-leave-active {
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.step-slide-enter-from {
-  opacity: 0;
-  transform: translateX(20px);
-}
-.step-slide-leave-to {
-  opacity: 0;
-  transform: translateX(-20px);
+@keyframes fieldGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.1), 0 0 8px rgba(20, 184, 166, 0.05);
+    border-color: rgba(20, 184, 166, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.25), 0 0 16px rgba(20, 184, 166, 0.15);
+    border-color: rgba(20, 184, 166, 0.6);
+  }
 }
 
 /* ─── Feedback transitions ─── */

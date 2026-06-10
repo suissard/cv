@@ -1,9 +1,9 @@
 <template>
-  <section id="cas-pratiques" class="py-24 relative z-10 px-6 max-w-5xl mx-auto">
+  <section id="cas-pratiques" class="py-16 relative z-10 px-6 max-w-5xl mx-auto">
     <!-- Gradient divider -->
-    <div class="section-divider mb-20"></div>
+    <div class="section-divider mb-12"></div>
 
-    <div class="text-center space-y-4 mb-14">
+    <div class="text-center space-y-4 mb-10">
       <span class="reveal badge-pill text-cyber-secondary font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border border-cyber-secondary/20 bg-cyber-secondary/5 inline-block">Cas réels</span>
       <h2 class="reveal stagger-1 text-2xl sm:text-4xl font-bold font-display text-white">
         Vous reconnaissez-vous dans ces situations ?

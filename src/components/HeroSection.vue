@@ -1,10 +1,5 @@
 <template>
-  <section class="relative min-h-screen flex items-center justify-center pt-28 pb-12 z-10 px-6 overflow-hidden">
-    <!-- Canvas 3D -->
-    <div class="absolute inset-0 z-0 pointer-events-none opacity-30">
-      <canvas ref="canvas3dRef" class="w-full h-full"></canvas>
-    </div>
-
+  <section class="relative min-h-[85vh] flex items-center justify-center pt-28 pb-12 z-10 px-6 overflow-hidden">
     <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
 
       <!-- Côté Gauche : Promesse de sérénité -->
@@ -29,26 +24,8 @@
           </p>
         </div>
 
-        <!-- Stats rapides -->
-        <div class="reveal stagger-4 flex flex-wrap gap-6 pt-1">
-          <div class="flex items-center space-x-2">
-            <span class="text-2xl font-bold font-display text-white stat-glow">10+</span>
-            <span class="text-[11px] text-gray-400 leading-tight">heures économisées<br>par semaine</span>
-          </div>
-          <div class="w-px h-8 bg-white/10"></div>
-          <div class="flex items-center space-x-2">
-            <span class="text-2xl font-bold font-display text-white stat-glow">0 €</span>
-            <span class="text-[11px] text-gray-400 leading-tight">d'abonnement<br>logiciel imposé</span>
-          </div>
-          <div class="w-px h-8 bg-white/10"></div>
-          <div class="flex items-center space-x-2">
-            <span class="text-2xl font-bold font-display text-white stat-glow">100%</span>
-            <span class="text-[11px] text-gray-400 leading-tight">confidentiel<br>& hébergé en UE</span>
-          </div>
-        </div>
-
         <!-- Call to actions directs -->
-        <div class="reveal stagger-5 flex flex-col sm:flex-row gap-4 pt-2">
+        <div class="reveal stagger-4 flex flex-col sm:flex-row gap-4 pt-2">
           <a href="#contact" class="cta-shimmer px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-center text-white hover:shadow-xl hover:shadow-cyber-primary/20 hover:scale-[1.02] transition-all duration-300">
             🚀 Simplifier mon quotidien maintenant
           </a>
@@ -98,110 +75,4 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
-import * as THREE from 'three';
-
-const canvas3dRef = ref(null);
-let scene, camera, renderer, particles;
-let animationFrameId;
-const count = 400;
-let mouseX = 0, mouseY = 0;
-
-const onWindowResize = () => {
-  if (camera && renderer) {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-};
-
-const onDocumentMouseMove = (event) => {
-  mouseX = (event.clientX - window.innerWidth / 2) * 0.05;
-  mouseY = (event.clientY - window.innerHeight / 2) * 0.05;
-};
-
-const animate = () => {
-  animationFrameId = requestAnimationFrame(animate);
-
-  const time = Date.now() * 0.0002;
-  const positions = particles.geometry.attributes.position.array;
-
-  for (let i = 0; i < count; i++) {
-    const ix = i * 3;
-    positions[ix + 1] += Math.sin(time + positions[ix] * 0.01) * 0.06;
-  }
-  particles.geometry.attributes.position.needsUpdate = true;
-
-  camera.position.x += (mouseX - camera.position.x) * 0.05;
-  camera.position.y += (-mouseY - camera.position.y) * 0.05;
-  camera.lookAt(scene.position);
-
-  particles.rotation.y = time * 0.02;
-
-  renderer.render(scene, camera);
-};
-
-onMounted(() => {
-  if (!canvas3dRef.value) return;
-
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-  camera.position.z = 240;
-
-  const positions = new Float32Array(count * 3);
-  const colors = new Float32Array(count * 3);
-
-  const color1 = new THREE.Color("#6366f1"); // Indigo
-  const color2 = new THREE.Color("#14b8a6"); // Turquoise d'action
-
-  for (let i = 0; i < count; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 600;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 600;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 600;
-
-    const mixedColor = color1.clone().lerp(color2, Math.random());
-    colors[i * 3] = mixedColor.r;
-    colors[i * 3 + 1] = mixedColor.g;
-    colors[i * 3 + 2] = mixedColor.b;
-  }
-
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-  const material = new THREE.PointsMaterial({
-    size: 2.2,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.5,
-    blending: THREE.AdditiveBlending
-  });
-
-  particles = new THREE.Points(geometry, material);
-  scene.add(particles);
-
-  renderer = new THREE.WebGLRenderer({ canvas: canvas3dRef.value, alpha: true, antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-
-  window.addEventListener('resize', onWindowResize);
-  document.addEventListener('mousemove', onDocumentMouseMove);
-
-  animate();
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', onWindowResize);
-  document.removeEventListener('mousemove', onDocumentMouseMove);
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId);
-  }
-  if (renderer) {
-    renderer.dispose();
-  }
-  if (particles) {
-    particles.geometry.dispose();
-    particles.material.dispose();
-  }
-});
 </script>

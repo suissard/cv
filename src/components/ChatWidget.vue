@@ -83,6 +83,14 @@
                   <span class="text-[9px] font-bold text-cyber-accent uppercase tracking-wider flex-shrink-0 pt-0.5">⚙️ Solution</span>
                   <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.solution_automatisee }}</span>
                 </template>
+                <template v-if="msg.structuredData.outils_existants">
+                  <span class="text-[9px] font-bold text-sky-400 uppercase tracking-wider flex-shrink-0 pt-0.5">🔧 Outils</span>
+                  <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.outils_existants }}</span>
+                </template>
+                <template v-if="msg.structuredData.volume_estime">
+                  <span class="text-[9px] font-bold text-orange-400 uppercase tracking-wider flex-shrink-0 pt-0.5">📊 Volume</span>
+                  <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.volume_estime }}</span>
+                </template>
                 <template v-if="msg.structuredData.impact_serenite">
                   <span class="text-[9px] font-bold text-fuchsia-400 uppercase tracking-wider flex-shrink-0 pt-0.5">🧘 Impact</span>
                   <span class="text-gray-300 pl-2 border-l border-white/10 line-clamp-2">{{ msg.structuredData.impact_serenite }}</span>

@@ -1,0 +1,628 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Comment souhaitez vous améliorer votre quotidien ?",
+        "options": {
+          "subtitle": "Je suis là pour aider a transformer vos idées en réalités !",
+          "title": "Bonjour,",
+          "customCss": "       :root {\n            /* Palette clavier.dev */\n            --bg-base: #030305;\n            --surface-glass: rgba(10, 11, 18, 0.45);\n            --border-glow: rgba(255, 255, 255, 0.06);\n            --color-primary: #6366f1; /* Indigo */\n            --color-secondary: #a855f7; /* Violet */\n            --color-accent: #14b8a6; /* Turquoise */\n            \n            /* Textes */\n            --text-white: #ffffff;\n            --text-light: #f3f4f6;\n            --text-muted: #9ca3af;\n            \n            /* Overrides CSS natifs n8n si présents */\n            --n8n-chat-primary-color: #6366f1;\n            --n8n-chat-bg-color: #030305;\n            --n8n-chat-text-color: #f3f4f6;\n        }\n\n        html, body {\n            width: 100%;\n            height: 100%;\n            margin: 0;\n            padding: 0;\n            background-color: var(--bg-base);\n            font-family: 'Inter', sans-serif;\n            color: var(--text-light);\n            overflow: hidden;\n        }\n\n        #n8n-chat {\n            width: 100%;\n            height: 100%;\n        }\n\n        /* Conteneur principal n8n */\n        .n8n-chat.chat-layout {\n            background-color: var(--bg-base) !important;\n            font-family: 'Inter', sans-serif !important;\n            border: none !important;\n            display: flex;\n            flex-direction: column;\n            height: 100%;\n        }\n\n        /* En-tête du tchat style cyber */\n        .n8n-chat .chat-header {\n            background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.08)) !important;\n            backdrop-filter: blur(12px);\n            -webkit-backdrop-filter: blur(12px);\n            border-bottom: 1px solid var(--border-glow) !important;\n            padding: 20px 24px !important;\n            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;\n        }\n\n        .n8n-chat .chat-header h1, \n        .n8n-chat .chat-heading h1 {\n            font-family: 'Space Grotesk', sans-serif !important;\n            font-weight: 700 !important;\n            font-size: 1.15rem !important;\n            color: var(--text-white) !important;\n            letter-spacing: -0.02em !important;\n            margin: 0 0 4px 0 !important;\n        }\n\n        .n8n-chat .chat-header p {\n            color: var(--text-muted) !important;\n            font-size: 0.8rem !important;\n            margin: 0 !important;\n            font-weight: 400 !important;\n        }\n\n        /* Corps du tchat et liste de messages */\n        .n8n-chat .chat-body {\n            background-color: var(--bg-base) !important;\n            background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.04) 0px, transparent 50%),\n                              radial-gradient(at 100% 100%, rgba(20, 184, 166, 0.03) 0px, transparent 50%);\n            padding: 24px !important;\n            flex-grow: 1;\n            overflow-y: auto;\n        }\n\n        /* Personnalisation de la barre de défilement (Scrollbar) */\n        .n8n-chat .chat-body::-webkit-scrollbar {\n            width: 5px;\n        }\n        .n8n-chat .chat-body::-webkit-scrollbar-track {\n            background: transparent;\n        }\n        .n8n-chat .chat-body::-webkit-scrollbar-thumb {\n            background: rgba(99, 102, 241, 0.25);\n            border-radius: 99px;\n        }\n\n        /* Styles génériques des messages */\n        .n8n-chat .chat-message {\n            max-width: 82% !important;\n            padding: 12px 16px !important;\n            font-size: 0.85rem !important;\n            line-height: 1.5 !important;\n            margin-bottom: 16px !important;\n            border-radius: 14px !important;\n            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;\n            font-weight: 400;\n            transition: all 0.2s ease;\n        }\n\n        /* Message venant de l'IA (Côté gauche) - Style Dev */\n        .n8n-chat .chat-message-from-bot {\n            background: var(--surface-glass) !important;\n            border: 1px solid var(--border-glow) !important;\n            color: var(--text-light) !important;\n            border-bottom-left-radius: 4px !important;\n            margin-right: auto !important;\n            font-family: 'JetBrains Mono', monospace !important; /* Police dev pour l'IA */\n            letter-spacing: -0.01em;\n        }\n\n        /* Message venant de l'utilisateur (Côté droit) */\n        .n8n-chat .chat-message-from-user,\n        .n8n-chat .chat-message-from-visitor {\n            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)) !important;\n            color: var(--text-white) !important;\n            border-bottom-right-radius: 4px !important;\n            margin-left: auto !important;\n            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15) !important;\n        }\n\n        /* Uniformisation des balises HTML à l'intérieur du markdown */\n        .n8n-chat .chat-message-markdown p {\n            margin: 0 !important;\n        }\n        .n8n-chat .chat-message-markdown a {\n            color: var(--color-accent) !important;\n            text-decoration: underline;\n        }\n        /* Style dev pour les blocs de code et balises techniques inline */\n        .n8n-chat .chat-message-markdown code,\n        .n8n-chat .chat-message-markdown pre {\n            font-family: 'JetBrains Mono', monospace !important;\n            background: rgba(255, 255, 255, 0.05) !important;\n            padding: 2px 6px !important;\n            border-radius: 4px !important;\n        }\n\n        /* Zone inférieure (Footer) */\n        .n8n-chat .chat-footer {\n            background-color: var(--bg-base) !important;\n            border-top: 1px solid var(--border-glow) !important;\n            padding: 16px 20px !important;\n            backdrop-filter: blur(12px);\n            -webkit-backdrop-filter: blur(12px);\n        }\n\n        /* Élimination complète du fond blanc de l'input imposé par n8n */\n        .n8n-chat .chat-input {\n            border: 1px solid var(--border-glow) !important;\n            background: #0a0b10 !important; /* Devient sombre */\n            background-color: #0a0b10 !important;\n            border-radius: 14px !important;\n            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;\n            padding: 4px !important;\n        }\n\n        .n8n-chat .chat-input:focus-within {\n            border-color: rgba(99, 102, 241, 0.4) !important;\n            background: #0e0f17 !important;\n            background-color: #0e0f17 !important;\n            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12) !important;\n        }\n\n        /* Neutralisation des wrappers d'input n8n */\n        .n8n-chat .chat-inputs {\n            background: transparent !important;\n            background-color: transparent !important;\n        }\n\n        /* Zone de saisie - Texte blanc garanti sur fond sombre */\n        .n8n-chat .chat-inputs textarea,\n        .n8n-chat .chat-input textarea,\n        #n8n-chat textarea,\n        textarea[data-test-id=\"chat-input\"] {\n            background: transparent !important;\n            background-color: transparent !important;\n            color: #ffffff !important;\n            -webkit-text-fill-color: #ffffff !important;\n            font-family: 'JetBrains Mono', monospace !important;\n            font-size: 0.85rem !important;\n            padding: 10px 12px !important;\n            border: none !important;\n            outline: none !important;\n            resize: none !important;\n            line-height: 1.4 !important;\n        }\n\n        .n8n-chat .chat-inputs textarea::placeholder {\n            color: rgba(156, 163, 175, 0.4) !important;\n            font-family: 'JetBrains Mono', monospace !important;\n        }\n\n        /* Bouton d'envoi */\n        .n8n-chat .chat-input-send-button {\n            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)) !important;\n            color: var(--text-white) !important;\n            border-radius: 10px !important;\n            width: 36px !important;\n            height: 36px !important;\n            padding: 0 !important;\n            display: flex !important;\n            align-items: center !important;\n            justify-content: center !important;\n            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;\n            border: none !important;\n            cursor: pointer !important;\n            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.2) !important;\n        }\n\n        .n8n-chat .chat-input-send-button:hover:not(:disabled) {\n            transform: scale(1.05) !important;\n            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35) !important;\n        }\n\n        .n8n-chat .chat-input-send-button:active:not(:disabled) {\n            transform: scale(0.95) !important;\n        }\n\n        /* Bouton désactivé (quand vide) */\n        .n8n-chat .chat-input-send-button:disabled {\n            background: rgba(255, 255, 255, 0.04) !important;\n            color: rgba(255, 255, 255, 0.15) !important;\n            cursor: not-allowed !important;\n            box-shadow: none !important;\n            transform: none !important;\n        }",
+          "responseMode": "lastNode"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        1232,
+        -928
+      ],
+      "id": "1b43420a-178b-4fd3-aa0e-1a35c010150b",
+      "name": "When chat message received",
+      "webhookId": "018653bb-fe00-4f2b-915b-b23a201afcb8"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1936,
+        -48
+      ],
+      "id": "2b823f6f-255b-4c6d-9397-6cbd00cc12aa",
+      "name": "Shared Memory"
+    },
+    {
+      "parameters": {
+        "model": "google/gemma-4-31b-it:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2704,
+        160
+      ],
+      "id": "b45d5cc6-82f7-4052-a0b7-bc8d840e55a2",
+      "name": "OpenRouter Fallback",
+      "credentials": {
+        "openRouterApi": {
+          "id": "MbNHN7a4NH7ldqXv",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# RÔLE\nTu es un classifieur de conversation. Tu reçois l'historique complet d'une conversation et le dernier message de l'utilisateur. Tu dois classer la conversation dans UNE des phases suivantes.\n\n# PHASES\n- **DISCOVERY** : L'utilisateur vient d'arriver OU a donné un premier besoin vague/court (< 2 échanges, pas de détails concrets sur son métier, ses outils, sa douleur principale)\n- **DEEPDIVE** : L'utilisateur a répondu à au moins 1-2 questions, mais certaines informations manquent encore (métier exact, outils utilisés, volume/fréquence, temps perdu)\n- **PROPOSAL** : On a suffisamment d'informations (métier, problème, contexte outils, volume) pour reformuler le besoin et proposer une solution concrète. OU l'utilisateur dit explicitement \"oui\", \"je veux une proposition\", \"proposez-moi\"\n- **FORMGEN** : L'utilisateur a EXPLICITEMENT accepté une proposition précédemment faite OU demande à \"passer à l'action\", \"envoyer un projet\", \"aller plus loin\", \"remplir le formulaire\", \"préparer la synthèse\", \"c'est parti\", \"on y va\"\n- **FAQ** : L'utilisateur pose une question générique (tarifs, compétences, parcours, exemples d'automatisations, technologies) qui ne concerne pas un projet spécifique personnel\n\n# FORMAT DE RÉPONSE\nRéponds UNIQUEMENT par un seul mot parmi : DISCOVERY, DEEPDIVE, PROPOSAL, FORMGEN, FAQ\nPas d'explication, pas de ponctuation, pas de phrase. Juste le mot de la phase."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1472,
+        -928
+      ],
+      "id": "bcc1fb17-5a5d-4636-817c-eb23152d2a5e",
+      "name": "🧠 Orchestrateur (Classifieur)"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "DISCOVERY",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "switch-discovery"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "DISCOVERY"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "DEEPDIVE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "switch-deepdive"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "DEEPDIVE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "PROPOSAL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "switch-proposal"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PROPOSAL"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "FORMGEN",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "switch-formgen"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "FORMGEN"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "FAQ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "switch-faq"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "FAQ"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1792,
+        -992
+      ],
+      "id": "b0d05829-af4a-447b-be48-2bf80152f38b",
+      "name": "🔀 Routeur de Phase"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "# RÔLE & IDENTITÉ\nTu es l'assistant virtuel bienveillant de Jérémy Clavier sur son site clavier.dev.\nTu es en PHASE DE DÉCOUVERTE. L'utilisateur vient d'arriver ou n'a donné qu'un besoin très vague.\n\n# OBJECTIF\nPoser UNE SEULE question ciblée pour comprendre le contexte de l'utilisateur.\nLes informations que tu cherches à obtenir (UNE À LA FOIS) :\n1. Son MÉTIER ou ACTIVITÉ (artisan, freelance, commerce, thérapeute...)\n2. La TÂCHE RÉPÉTITIVE qui le fatigue le plus au quotidien\n\n# STYLE\n- Maximum 3 phrases courtes\n- Vouvoiement OBLIGATOIRE\n- Chaleureux, accueillant, pas intrusif\n- Zéro jargon technique (pas d'API, n8n, webhook, LLM, base de données...)\n- Maximum 1 emoji (privilégie 🧘 ou ☕)\n- Ne pose JAMAIS 2 questions à la fois\n- Valide brièvement ce que l'utilisateur a dit avant de poser ta question\n\n# EXEMPLES\nUtilisateur : \"Je perds du temps\"\n→ \"C'est justement ce qu'on peut résoudre ensemble ! 🧘 Pour commencer, quel est votre métier ou votre activité ?\"\n\nUtilisateur : \"Je suis artisan\"\n→ \"Bienvenue ! L'artisanat regorge de tâches chronophages qu'on peut simplifier. Quelle corvée administrative vous pèse le plus au quotidien ?\"\n\nUtilisateur : \"Salut\"\n→ \"Bonjour et bienvenue ! ☕ Quel aspect de votre quotidien professionnel aimeriez-vous simplifier ?\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2160,
+        -1328
+      ],
+      "id": "39bac190-689b-4d2a-b022-3be6936cdb8a",
+      "name": "🔍 Agent Découverte"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "# RÔLE & IDENTITÉ\nTu es l'assistant virtuel de Jérémy Clavier sur clavier.dev.\nTu es en PHASE D'APPROFONDISSEMENT. L'utilisateur a donné un premier besoin, tu dois le préciser.\n\n# OBJECTIF\nQualifier le besoin en posant UNE question ciblée par message. Les informations complémentaires à obtenir :\n1. Quels OUTILS utilise-t-il déjà ? (tableurs, logiciel de compta, CRM, agenda papier, application...)\n2. Quel VOLUME est concerné ? (combien de clients, devis, factures, RDV par semaine/mois ?)\n3. Combien de TEMPS y passe-t-il ? (heures par semaine sur cette tâche)\n\n# STYLE\n- Maximum 3-4 phrases\n- Vouvoiement OBLIGATOIRE\n- Commence toujours par VALIDER ce que l'utilisateur a dit (\"Je comprends...\" / \"D'accord...\")\n- Puis pose UNE SEULE question suivante\n- Zéro jargon technique\n- Maximum 1 emoji\n\n# DÉTECTION DE COMPLÉTUDE\nSi tu estimes avoir ASSEZ d'informations (métier + tâche pénible + au moins 1 outil + une idée du volume), termine OBLIGATOIREMENT ton message par :\n\"Je crois avoir une bonne vue d'ensemble de votre situation ! Voulez-vous que je vous propose une solution adaptée ? 🚀\"\n\n# EXEMPLES\nUtilisateur : \"J'utilise Excel pour mes factures\"\n→ \"D'accord, Excel c'est pratique mais ça peut vite devenir chronophage ! Environ combien de factures envoyez-vous par mois ?\"\n\nUtilisateur : \"Une dizaine par mois, ça me prend 2h chaque semaine\"\n→ \"2 heures par semaine de saisie manuelle, ça représente plus de 100 heures par an de temps perdu ! 🧘 Je crois avoir une bonne vue d'ensemble de votre situation. Voulez-vous que je vous propose une solution adaptée ? 🚀\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2160,
+        -1088
+      ],
+      "id": "f36fa791-47ad-4c01-891d-ae28ee44820d",
+      "name": "🎯 Agent Approfondissement"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "# RÔLE & IDENTITÉ\nTu es l'assistant virtuel de Jérémy Clavier sur clavier.dev.\nTu es en PHASE DE PROPOSITION. Tu as maintenant assez d'informations pour reformuler le besoin et proposer une solution.\n\n# STRUCTURE OBLIGATOIRE DE TA RÉPONSE\n\n## 1. Reformulation empathique\nCommence par \"Si je résume bien...\" et reformule en 2-3 phrases ce que l'utilisateur a décrit : son métier, sa corvée, son contexte. Montre que tu as COMPRIS sa douleur.\n\n## 2. Solutions proposées — DEUX volets obligatoires :\n\n### 🏠 Application sur-mesure\nDécris en 2-3 phrases un outil dédié que Jérémy peut construire : mini-portail client, tableau de bord de suivi, outil de génération de documents, interface de prise de RDV... Adapté à SON métier.\n\n### ⚡ Automatisations intelligentes\nListe à puces de 3 à 5 flux automatisés, chacun en 1 phrase simple :\n- \"Quand [déclencheur] → [action automatique]\"\nEx : \"Quand un devis est accepté → la facture se génère et s'envoie automatiquement\"\n\n## 3. Bénéfice de sérénité ☕\n1-2 phrases sur ce que l'utilisateur va RESSENTIR : temps libre, esprit léger, zéro oubli, soirées récupérées...\n\n## 4. Call-to-action 🚀\nTermine OBLIGATOIREMENT par :\n\"Si cette proposition vous parle, je peux préparer une synthèse de votre projet que vous n'aurez plus qu'à envoyer à Jérémy pour passer de l'idée à la réalité ! 🚀\"\n\n# STYLE\n- Vouvoiement OBLIGATOIRE\n- ZÉRO jargon technique (pas d'API, n8n, webhook, REST, SQL, LLM)\n- Parle d'outils du quotidien : tableau de suivi, notifications, rappels, documents auto-générés...\n- Maximum 2 emojis dans toute la réponse (🧘 ⚡ ☕ 🚀)\n- Pas de titres markdown (# ## ###). Utilise uniquement **gras** et listes à puces."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2160,
+        -848
+      ],
+      "id": "77234eb8-5b12-4d4e-af2a-8c5d46e2a78f",
+      "name": "💡 Agent Proposition"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "# RÔLE\nL'utilisateur a accepté la proposition. Tu dois maintenant synthétiser TOUT l'historique de la conversation en un cahier des charges structuré.\n\n# FORMAT DE RÉPONSE OBLIGATOIRE\nTa réponse comporte EXACTEMENT deux parties :\n\n## Partie 1 : Texte d'accompagnement\nMaximum 2 phrases, chaleureuses et encourageantes. Ex : \\\"C'est parfait ! Voici la fiche de votre projet, vous n'avez plus qu'à vérifier et cliquer pour l'envoyer à Jérémy. ☕\\\"\n\n## Partie 2 : Formulaire structuré\nLe JSON suivant, strictement encadré par les balises ci-dessous :\n\n===FORM_START===\n{\n  \\\"titre_projet\\\": \\\"[Nom court et parlant du projet d'automatisation]\\\",\n  \\\"situation_actuelle\\\": \\\"[Description précise de la corvée / du problème identifié pendant l'échange]\\\",\n  \\\"solution_automatisee\\\": \\\"[Solution complète proposée : application sur-mesure ET automatisations IA]\\\",\n  \\\"outils_existants\\\": \\\"[Outils mentionnés par l'utilisateur ou identifiés]\\\",\n  \\\"volume_estime\\\": \\\"[Volume, fréquence ou temps perdu estimé]\\\",\n  \\\"impact_serenite\\\": \\\"[Bénéfice concret attendu : temps gagné, charge mentale réduite, qualité améliorée]\\\"\n}\n===FORM_END===\n\n# RÈGLES\n- Le JSON doit être VALIDE et COMPLET\n- Chaque champ doit refléter les VRAIS échanges (pas d'invention)\n- Le titre_projet doit être court (5-8 mots max)\n- Vouvoiement\n- Maximum 1 emoji dans le texte d'accompagnement"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2160,
+        -640
+      ],
+      "id": "21b83e35-4c7f-4c7c-825b-6a0024f59ba4",
+      "name": "📋 Agent Formulaire"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "# RÔLE & IDENTITÉ\nTu es l'assistant virtuel bienveillant et pragmatique de Jérémy Clavier sur son site clavier.dev. L'utilisateur pose une question GÉNÉRALE (pas un projet personnel).\n\n# SUJETS COUVERTS\n- Tarifs et formules de prestation\n- Exemples d'automatisations réalisées\n- Compétences techniques de Jérémy\n- Fonctionnement et processus de collaboration\n\n# INFORMATIONS CLÉS\n- Prestations sur-mesure : à partir de 500€ pour une intégration standard (2-3 outils connectés)\n- Audit & conseil : forfaitaire\n- Spécialités : automatisation de processus, applications sur-mesure, intégration d'IA dans les flux métier\n- Public : artisans, indépendants, TPE/PME débordés par la gestion quotidienne\n\n# EXEMPLES D'AUTOMATISATIONS\n- Rappels SMS automatiques pour les RDV\n- Relance de devis automatique\n- Accueil client et onboarding automatisé\n- Tri et pré-réponse d'emails par IA\n- Compte-rendus de réunion par IA\n- Saisie comptable automatique depuis les reçus\n\n# STYLE\n- Maximum 4-5 phrases\n- Vouvoiement\n- Chaleureux et informatif\n- Maximum 2 emojis\n- TERMINE TOUJOURS par une invitation à décrire un besoin personnel :\n  \"N'hésitez pas à me décrire votre quotidien professionnel, je suis là pour trouver comment vous simplifier la vie ! 🧘\"\n\n# PHILOSOPHIE\nTu ne vends pas de la technologie, tu vends du temps de cerveau disponible et de la tranquillité d'esprit."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2160,
+        -416
+      ],
+      "id": "3a00684d-e481-49e5-9e8e-e1d7b746fdee",
+      "name": "💬 Agent FAQ"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1360,
+        -672
+      ],
+      "id": "ee774201-deea-4157-a4c1-665f963b19e0",
+      "name": "Orchestrator Memory"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "rule": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f73e0a44-f65b-4b59-9f6a-db35aea0b4b8",
+                    "leftValue": "true",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.modelSelector",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        -64
+      ],
+      "id": "6563d45f-2089-4cfe-9ff9-1f4788fe1e33",
+      "name": "Model Selector1"
+    },
+    {
+      "parameters": {
+        "model": "google/gemma-4-31b-it:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        160
+      ],
+      "id": "4fcac20c-8fe3-44ab-a6da-0280c94a0bb4",
+      "name": "gemma4 free1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "MbNHN7a4NH7ldqXv",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "google/gemma-4-26b-a4b-it:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        -672
+      ],
+      "id": "b38c7f48-5d6f-4af7-bab3-830cd2e9634b",
+      "name": "classifieur léger",
+      "credentials": {
+        "openRouterApi": {
+          "id": "LtSLsUmnUq7dxqI2",
+          "name": "OpenRouter 2€/day"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "deepseek-v4-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        368
+      ],
+      "id": "1809f370-f2ec-4c9e-bb09-ceb6a92fd5d2",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "SVGZi345Xr0FCQBY",
+          "name": "DeepSeek account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "🧠 Orchestrateur (Classifieur)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shared Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "🔍 Agent Découverte",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "🎯 Agent Approfondissement",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "💡 Agent Proposition",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "📋 Agent Formulaire",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "💬 Agent FAQ",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Fallback": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Model Selector1",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "🧠 Orchestrateur (Classifieur)": {
+      "main": [
+        [
+          {
+            "node": "🔀 Routeur de Phase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔀 Routeur de Phase": {
+      "main": [
+        [
+          {
+            "node": "🔍 Agent Découverte",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🎯 Agent Approfondissement",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "💡 Agent Proposition",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📋 Agent Formulaire",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "💬 Agent FAQ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🔍 Agent Découverte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Agent Découverte": {
+      "main": [
+        []
+      ]
+    },
+    "🎯 Agent Approfondissement": {
+      "main": [
+        []
+      ]
+    },
+    "💡 Agent Proposition": {
+      "main": [
+        []
+      ]
+    },
+    "📋 Agent Formulaire": {
+      "main": [
+        []
+      ]
+    },
+    "💬 Agent FAQ": {
+      "main": [
+        []
+      ]
+    },
+    "Orchestrator Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "🧠 Orchestrateur (Classifieur)",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model Selector1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "🔍 Agent Découverte",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "🎯 Agent Approfondissement",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "💡 Agent Proposition",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "📋 Agent Formulaire",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "💬 Agent FAQ",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemma4 free1": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "classifieur léger": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "🧠 Orchestrateur (Classifieur)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Model Selector1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "When chat message received": [
+      {
+        "action": "sendMessage",
+        "sessionId": "sess_yrno5eji4_1781122926663",
+        "chatInput": "Bonjour, je suis interesser par vos solution et j'ai des idées pour ma boite"
+      }
+    ],
+    "🧠 Orchestrateur (Classifieur)": [
+      {
+        "output": "DISCOVERY"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2b8a9ae1093cca13e275d12302448f51a2f59dc10bdfe2f99afb7073096f27e1"
+  }
+}

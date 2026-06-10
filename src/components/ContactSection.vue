@@ -184,6 +184,32 @@
                     </div>
                   </div>
 
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                      <label class="block text-[10px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1">
+                        <span>🔧 Outils déjà utilisés</span>
+                      </label>
+                      <input 
+                        type="text"
+                        v-model="formData.outils_existants" 
+                        placeholder="Ex: Excel, Gmail, Calendly, papier..." 
+                        class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 font-sans"
+                      >
+                    </div>
+
+                    <div class="space-y-1.5">
+                      <label class="block text-[10px] font-bold uppercase tracking-wider text-orange-400 flex items-center gap-1">
+                        <span>📊 Volume / Fréquence</span>
+                      </label>
+                      <input 
+                        type="text"
+                        v-model="formData.volume_estime" 
+                        placeholder="Ex: ~15 factures/mois, 3h/semaine" 
+                        class="w-full px-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:border-cyber-primary/50 focus:outline-none text-sm text-white transition-all duration-300 font-sans"
+                      >
+                    </div>
+                  </div>
+
                   <div class="space-y-1.5">
                     <label class="block text-[10px] font-bold uppercase tracking-wider text-fuchsia-400 flex items-center gap-1">
                       <span>🧘 Bénéfice & Sérénité attendus</span>
@@ -290,7 +316,9 @@ const formData = ref({
   description: '',
   situation_actuelle: '',
   solution_automatisee: '',
-  impact_serenite: ''
+  impact_serenite: '',
+  outils_existants: '',
+  volume_estime: ''
 });
 
 const isSubmitting = ref(false);
@@ -366,6 +394,12 @@ const syncStructuredToSimple = () => {
   if (formData.value.solution_automatisee.trim()) {
     parts.push(`Solution souhaitée : ${formData.value.solution_automatisee.trim()}`);
   }
+  if (formData.value.outils_existants.trim()) {
+    parts.push(`Outils existants : ${formData.value.outils_existants.trim()}`);
+  }
+  if (formData.value.volume_estime.trim()) {
+    parts.push(`Volume / Fréquence : ${formData.value.volume_estime.trim()}`);
+  }
   if (formData.value.impact_serenite.trim()) {
     parts.push(`Bénéfice & Sérénité : ${formData.value.impact_serenite.trim()}`);
   }
@@ -393,6 +427,8 @@ const handlePrefill = (data) => {
   formData.value.situation_actuelle = data.situation_actuelle || '';
   formData.value.solution_automatisee = data.solution_automatisee || '';
   formData.value.impact_serenite = data.impact_serenite || '';
+  formData.value.outils_existants = data.outils_existants || '';
+  formData.value.volume_estime = data.volume_estime || '';
   
   syncStructuredToSimple();
   
@@ -447,7 +483,9 @@ const handleFormSubmit = async () => {
         description: '',
         situation_actuelle: '',
         solution_automatisee: '',
-        impact_serenite: ''
+        impact_serenite: '',
+        outils_existants: '',
+        volume_estime: ''
       };
       isStructuredForm.value = false;
       currentStep.value = 1;
@@ -468,6 +506,12 @@ ${formData.value.situation_actuelle || formData.value.description || ''}
 
 - Solution souhaitée :
 ${formData.value.solution_automatisee || ''}
+
+- Outils déjà utilisés :
+${formData.value.outils_existants || 'Non précisé'}
+
+- Volume / Fréquence :
+${formData.value.volume_estime || 'Non précisé'}
 
 - Bénéfices attendus :
 ${formData.value.impact_serenite || ''}

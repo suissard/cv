@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="chat-container flex flex-col h-[550px] bg-dark-base rounded-b-2xl overflow-hidden relative font-sans text-gray-200"
+    class="chat-container flex flex-col h-full bg-dark-base rounded-b-2xl overflow-hidden relative font-sans text-gray-200"
     @click="handleContainerClick"
   >
     

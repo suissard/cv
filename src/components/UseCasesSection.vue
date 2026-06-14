@@ -13,10 +13,11 @@
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div ref="cardsContainerRef" class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <UseCaseCard
         v-for="(useCase, index) in useCasesData"
         :key="useCase.id"
+        ref="cardRefs"
         :problem="useCase.problem"
         :solution="useCase.solution"
         :class="['reveal-scale', `stagger-${index + 2}`]"
@@ -26,8 +27,44 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
 import UseCaseCard from './UseCaseCard.vue';
 import contentData from '../data/content.json';
 
 const useCasesData = contentData.useCases;
+const cardsContainerRef = ref(null);
+const cardRefs = ref([]);
+let observer = null;
+
+onMounted(() => {
+  observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      triggerAutoUnflip();
+      if (observer) {
+        observer.disconnect();
+      }
+    }
+  }, { threshold: 0.3 });
+
+  if (cardsContainerRef.value) {
+    observer.observe(cardsContainerRef.value);
+  }
+});
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect();
+  }
+});
+
+const triggerAutoUnflip = () => {
+  if (!cardRefs.value || cardRefs.value.length === 0) return;
+  
+  // Les cartes sont initialement retournées (solution), on les remet à l'endroit (problème) une par une
+  cardRefs.value.forEach((card, index) => {
+    setTimeout(() => {
+      if (card && card.autoUnflip) card.autoUnflip();
+    }, index * 400 + 400); // Délai de 400ms pour commencer, puis 400ms entre chaque
+  });
+};
 </script>

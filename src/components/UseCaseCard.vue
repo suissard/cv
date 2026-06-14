@@ -57,7 +57,7 @@ const props = defineProps({
   }
 });
 
-const isFlipped = ref(false);
+const isFlipped = ref(true);
 
 const toggleCard = () => {
   isFlipped.value = !isFlipped.value;
@@ -65,6 +65,19 @@ const toggleCard = () => {
     posthog.capture('use_case_card_flipped', { problem_title: props.problem.title })
   }
 };
+
+const autoFlip = () => {
+  isFlipped.value = true;
+};
+
+const autoUnflip = () => {
+  isFlipped.value = false;
+};
+
+defineExpose({
+  autoFlip,
+  autoUnflip
+});
 </script>
 
 <style scoped>

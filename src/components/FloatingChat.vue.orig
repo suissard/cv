@@ -1,0 +1,143 @@
+<template>
+  <div ref="placeholderRef" class="w-10 h-10 hidden sm:block relative"></div>
+
+  <!-- Teleport the fixed elements to body so they are not constrained by any overflow hidden -->
+  <Teleport to="body">
+    <Transition name="chat-window">
+      <div v-if="isOpen" class="fixed bottom-24 right-6 sm:right-10 w-[380px] max-w-[calc(100vw-3rem)] h-[550px] max-h-[calc(100vh-8rem)] z-[100] rounded-2xl shadow-2xl border border-white/10 overflow-hidden bg-dark-base flex flex-col">
+        <!-- Add a header to the chat window -->
+        <div class="bg-white/[0.02] border-b border-white/5 px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+             <span class="w-2.5 h-2.5 rounded-full bg-red-500/50"></span>
+             <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></span>
+             <span class="w-2.5 h-2.5 rounded-full bg-green-500/50"></span>
+             <span class="ml-3 text-[11px] font-semibold text-gray-400 flex items-center gap-1.5">
+               <span>💬</span> Assistant IA
+             </span>
+          </div>
+          <button @click="isOpen = false" class="text-gray-400 hover:text-white transition-colors cursor-pointer">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+        <ChatWidget 
+          @switch-tab="closeChatAndScrollToForm" 
+          @prefill-form="handlePrefillEvent" 
+          class="flex-1 rounded-none border-none" 
+        />
+      </div>
+    </Transition>
+
+    <button 
+      @click="isOpen = !isOpen"
+      class="fixed top-0 left-0 z-[110] flex items-center justify-center text-white transition-all duration-[700ms] chat-btn-anim border border-white/10 cursor-pointer overflow-hidden group"
+      :class="isScrolled ? 'bg-gradient-to-r from-cyber-primary to-cyber-secondary shadow-[0_0_20px_rgba(99,102,241,0.4)]' : 'bg-white/10 hover:bg-white/20'"
+      :style="btnStyle"
+      :title="isOpen ? 'Fermer le chat' : 'Ouvrir le chat IA'"
+    >
+      <div v-if="isScrolled" class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <i :class="isOpen ? 'fa-solid fa-xmark text-xl' : 'fa-solid fa-robot text-lg'"></i>
+    </button>
+  </Teleport>
+</template>
+
+<script setup>
+import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import ChatWidget from './ChatWidget.vue';
+
+const props = defineProps({
+  isScrolled: Boolean
+});
+
+const placeholderRef = ref(null);
+const btnStyle = ref({});
+const isOpen = ref(false);
+
+const updatePosition = () => {
+  if (props.isScrolled) {
+    // Fixed bottom right
+    const btnSize = 56; // 3.5rem = 56px
+    const marginY = 24; // bottom-6 = 24px
+    const marginX = window.innerWidth >= 640 ? 40 : 24; // sm:right-10 = 40px, right-6 = 24px
+    
+    const x = window.innerWidth - btnSize - marginX;
+    const y = window.innerHeight - btnSize - marginY;
+    
+    btnStyle.value = {
+      transform: `translate(${x}px, ${y}px)`,
+      width: `${btnSize}px`,
+      height: `${btnSize}px`,
+      borderRadius: '50%',
+    };
+  } else {
+    // Docked in placeholder
+    if (placeholderRef.value) {
+      const rect = placeholderRef.value.getBoundingClientRect();
+      // If the placeholder is hidden (e.g., on mobile), we just put it in a default top-right spot
+      if (rect.width === 0) {
+        const x = window.innerWidth - 40 - 24;
+        const y = 16;
+        btnStyle.value = {
+          transform: `translate(${x}px, ${y}px)`,
+          width: `40px`,
+          height: `40px`,
+          borderRadius: '0.75rem',
+        };
+      } else {
+        btnStyle.value = {
+          transform: `translate(${rect.left}px, ${rect.top}px)`,
+          width: `${rect.width}px`,
+          height: `${rect.height}px`,
+          borderRadius: '0.75rem',
+        };
+      }
+    }
+  }
+};
+
+watch(() => props.isScrolled, () => {
+  nextTick(() => {
+    updatePosition();
+  });
+});
+
+onMounted(() => {
+  window.addEventListener('resize', updatePosition);
+  window.addEventListener('scroll', updatePosition, { passive: true });
+  // Initial calculation after a short delay to ensure DOM is fully rendered
+  setTimeout(updatePosition, 100);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updatePosition);
+  window.removeEventListener('scroll', updatePosition);
+});
+
+const closeChatAndScrollToForm = () => {
+  isOpen.value = false;
+  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+};
+
+const handlePrefillEvent = (data) => {
+  isOpen.value = false;
+  window.dispatchEvent(new CustomEvent('chat-prefill', { detail: data }));
+  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+};
+</script>
+
+<style scoped>
+.chat-btn-anim {
+  /* Bouncy effect for extraction and insertion */
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.chat-window-enter-active,
+.chat-window-leave-active {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.chat-window-enter-from,
+.chat-window-leave-to {
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  transform-origin: bottom right;
+}
+</style>

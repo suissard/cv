@@ -11,30 +11,10 @@
       </p>
     </div>
 
-    <!-- Side-by-side layout: Chat + Formulaire -->
-    <div class="reveal stagger-3 contact-layout">
+    <!-- Layout: Formulaire Centré -->
+    <div class="reveal stagger-3 max-w-2xl mx-auto">
 
-      <!-- LEFT: Chat Panel -->
-      <div class="contact-panel contact-panel--chat glass-card rounded-2xl border-white/10 overflow-hidden shadow-2xl relative glow-hover">
-        <!-- Chat Header Bar -->
-        <div class="bg-white/[0.02] border-b border-white/5 px-4 py-3 flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-red-500/50"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-green-500/50"></span>
-            <span class="ml-3 text-[11px] font-semibold text-gray-400 flex items-center gap-1.5">
-              <span>💬</span> Assistant IA
-            </span>
-          </div>
-          <div class="flex items-center space-x-1 text-[10px] text-cyber-accent">
-            <span class="w-1.5 h-1.5 rounded-full bg-cyber-accent animate-pulse mr-1"></span>
-            <span>En ligne</span>
-          </div>
-        </div>
-        <ChatWidget @switch-tab="() => {}" @prefill-form="handlePrefill" />
-      </div>
-
-      <!-- RIGHT: Form Panel -->
+      <!-- Form Panel -->
       <div ref="formPanelRef" class="contact-panel contact-panel--form glass-card rounded-2xl border-white/10 overflow-hidden shadow-2xl relative glow-hover">
         <!-- Form Header Bar -->
         <div class="bg-white/[0.02] border-b border-white/5 px-4 py-3 flex items-center justify-between">
@@ -249,8 +229,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
-import ChatWidget from './ChatWidget.vue';
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import posthog from 'posthog-js';
 
 const isStructuredForm = ref(false);
@@ -289,11 +268,21 @@ const isEmailInvalid = computed(() => {
   return !isValidEmail(formData.value.email);
 });
 
+const handleGlobalPrefill = (e) => {
+  handlePrefill(e.detail);
+};
+
 onMounted(() => {
   const savedName = localStorage.getItem('contact_name');
   const savedEmail = localStorage.getItem('contact_email');
   if (savedName) formData.value.name = savedName;
   if (savedEmail) formData.value.email = savedEmail;
+  
+  window.addEventListener('chat-prefill', handleGlobalPrefill);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('chat-prefill', handleGlobalPrefill);
 });
 
 /* ─── Auto-resize textarea ─── */
@@ -504,20 +493,7 @@ ${formData.value.email || ''}`;
 </script>
 
 <style scoped>
-/* ─── Side-by-side Layout ─── */
-.contact-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  align-items: start;
-}
-
-@media (max-width: 1023px) {
-  .contact-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* ─── Layout ─── */
 .contact-panel {
   min-height: 400px;
   display: flex;

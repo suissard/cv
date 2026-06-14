@@ -1,0 +1,15 @@
+--- src/components/FloatingChat.vue
++++ src/components/FloatingChat.vue
+@@ -102,12 +102,10 @@
+ 
+ onMounted(() => {
+   window.addEventListener('resize', updatePosition);
+-  window.addEventListener('scroll', updatePosition, { passive: true });
+   // Initial calculation after a short delay to ensure DOM is fully rendered
+   setTimeout(updatePosition, 100);
+ });
+ 
+ onBeforeUnmount(() => {
+   window.removeEventListener('resize', updatePosition);
+-  window.removeEventListener('scroll', updatePosition);
+ });

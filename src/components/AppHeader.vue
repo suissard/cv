@@ -18,18 +18,24 @@
         </div>
       </a>
 
-      <a
-        href="#contact"
-        class="cta-shimmer px-5 py-2 rounded-full bg-gradient-to-r from-cyber-primary to-cyber-secondary hover:shadow-lg hover:shadow-cyber-primary/25 text-xs font-bold text-white transition-all duration-300 transform hover:scale-105"
-      >
-        ⚡ Proposer un projet
-      </a>
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <a
+          href="#contact"
+          class="cta-shimmer px-5 py-2 rounded-full bg-gradient-to-r from-cyber-primary to-cyber-secondary hover:shadow-lg hover:shadow-cyber-primary/25 text-xs font-bold text-white transition-all duration-300 transform hover:scale-105"
+        >
+          ⚡ Proposer un projet
+        </a>
+        
+        <!-- The placeholder and logic for the floating chat button -->
+        <FloatingChat :isScrolled="isScrolled" />
+      </div>
     </div>
   </header>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import FloatingChat from './FloatingChat.vue';
 
 const isScrolled = ref(false);
 

@@ -44,6 +44,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import posthog from 'posthog-js';
 
 const props = defineProps({
   problem: {
@@ -60,6 +61,9 @@ const isFlipped = ref(false);
 
 const toggleCard = () => {
   isFlipped.value = !isFlipped.value;
+  if (isFlipped.value) {
+    posthog.capture('use_case_card_flipped', { problem_title: props.problem.title })
+  }
 };
 </script>
 

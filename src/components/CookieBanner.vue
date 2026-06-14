@@ -13,7 +13,7 @@
               Respect de votre vie privée
             </h3>
             <p class="text-gray-400 text-sm leading-relaxed">
-              Nous utilisons des cookies (via Google Tag Manager) pour analyser le trafic, 
+              Nous utilisons des cookies (via PostHog) pour analyser le trafic, 
               améliorer votre expérience sur le site et vous proposer du contenu pertinent. 
               Vous pouvez accepter ces cookies ou les refuser. 
               Pour en savoir plus, consultez nos 
@@ -43,49 +43,26 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import posthog from 'posthog-js';
 
 const isVisible = ref(false);
-const gtmId = 'GTM-578CDPQB'; // Remplace par ton ID GTM si besoin
 
 const emit = defineEmits(['open-legal']);
 
-// Fonction pour injecter GTM
-const injectGTM = () => {
-  // Vérifie si GTM est déjà injecté pour éviter les doublons
-  if (document.getElementById('gtm-script')) return;
-
-  // Initialisation du dataLayer
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    'gtm.start': new Date().getTime(),
-    event: 'gtm.js'
-  });
-
-  // Injection du script
-  const script = document.createElement('script');
-  script.id = 'gtm-script';
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
-  document.head.appendChild(script);
-
-  // Injection du noscript (optionnel, surtout utile si le JS est désactivé, ce qui est rare sur une app Vue)
-  const noscript = document.createElement('noscript');
-  const iframe = document.createElement('iframe');
-  iframe.src = `https://www.googletagmanager.com/ns.html?id=${gtmId}`;
-  iframe.height = "0";
-  iframe.width = "0";
-  iframe.style.display = "none";
-  iframe.style.visibility = "hidden";
-  noscript.appendChild(iframe);
-  document.body.insertBefore(noscript, document.body.firstChild);
+// Fonction pour gérer l'opt-in PostHog
+const handleConsent = (isGranted) => {
+  if (isGranted) {
+    posthog.opt_in_capturing();
+  } else {
+    posthog.opt_out_capturing();
+  }
 };
 
 onMounted(() => {
   // Check if consent has already been given
   const consent = localStorage.getItem('cookie_consent');
   if (consent === 'granted') {
-    // S'il a déjà accepté avant, on injecte GTM direct
-    injectGTM();
+    handleConsent(true);
   } else if (!consent) {
     // S'il n'a pas encore fait de choix, on affiche la bannière
     // Small delay before showing the banner for better UX
@@ -101,17 +78,20 @@ const openLegal = () => {
 
 const acceptAll = () => {
   localStorage.setItem('cookie_consent', 'granted');
-  injectGTM();
+  handleConsent(true);
   isVisible.value = false;
+  posthog.capture('cookie_consent_accepted');
 };
 
 const declineAll = () => {
   const previousConsent = localStorage.getItem('cookie_consent');
   localStorage.setItem('cookie_consent', 'denied');
+  handleConsent(false);
   isVisible.value = false;
+  posthog.capture('cookie_consent_declined');
   
   // Si l'utilisateur avait déjà accepté et qu'il change d'avis, on recharge la page 
-  // pour purger GTM de la mémoire de la session en cours.
+  // pour s'assurer qu'aucun cookie tier existant ne continue d'être exploité dans la session.
   if (previousConsent === 'granted') {
     window.location.reload();
   }

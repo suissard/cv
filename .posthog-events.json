@@ -1,0 +1,57 @@
+[
+  {
+    "event": "contact_form_submitted",
+    "description": "User successfully submitted the contact/project form to the n8n webhook",
+    "file": "src/components/ContactSection.vue"
+  },
+  {
+    "event": "contact_form_submission_failed",
+    "description": "Form submission to the n8n webhook failed with an error",
+    "file": "src/components/ContactSection.vue"
+  },
+  {
+    "event": "contact_form_mode_toggled",
+    "description": "User toggled between simple description mode and structured (detailed) form mode",
+    "file": "src/components/ContactSection.vue"
+  },
+  {
+    "event": "chat_message_sent",
+    "description": "User sent a message in the AI chat assistant widget",
+    "file": "src/components/ChatWidget.vue"
+  },
+  {
+    "event": "chat_suggestion_clicked",
+    "description": "User clicked a suggestion pill in the chat widget",
+    "file": "src/components/ChatWidget.vue"
+  },
+  {
+    "event": "chat_form_prefilled",
+    "description": "User loaded AI-generated project synthesis from chat into the contact form",
+    "file": "src/components/ChatWidget.vue"
+  },
+  {
+    "event": "chat_reset",
+    "description": "User reset/restarted the chat conversation",
+    "file": "src/components/ChatWidget.vue"
+  },
+  {
+    "event": "use_case_card_flipped",
+    "description": "User flipped a use case card to reveal the automation solution side",
+    "file": "src/components/UseCaseCard.vue"
+  },
+  {
+    "event": "cookie_consent_accepted",
+    "description": "User accepted cookies/analytics tracking via the cookie banner",
+    "file": "src/components/CookieBanner.vue"
+  },
+  {
+    "event": "cookie_consent_declined",
+    "description": "User declined cookies/analytics tracking via the cookie banner",
+    "file": "src/components/CookieBanner.vue"
+  },
+  {
+    "event": "hero_cta_clicked",
+    "description": "User clicked a call-to-action button in the hero section",
+    "file": "src/components/HeroSection.vue"
+  }
+]

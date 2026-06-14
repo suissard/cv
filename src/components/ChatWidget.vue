@@ -148,12 +148,14 @@ import { ref, onMounted, nextTick, computed, onBeforeUnmount } from 'vue';
 import { marked } from 'marked';
 import TypewriterText from './TypewriterText.vue';
 import suggestionsConfig from '../data/suggestions.json';
+import posthog from 'posthog-js';
 
 const emit = defineEmits(['switch-tab', 'prefill-form']);
 
 const prefillForm = (data) => {
   emit('prefill-form', data);
   emit('switch-tab', 'form');
+  posthog.capture('chat_form_prefilled')
 };
 
 // Configure marked to open links in a new tab
@@ -241,6 +243,7 @@ onBeforeUnmount(() => {
 
 // Resets conversation
 const resetChat = () => {
+  posthog.capture('chat_reset')
   sessionStorage.removeItem('chat_session_id');
   messages.value = [
     {
@@ -280,6 +283,8 @@ const findDefaultResponse = (text) => {
 const sendMessage = async (text) => {
   const cleanText = text.trim();
   if (!cleanText) return;
+
+  posthog.capture('chat_message_sent', { message_length: cleanText.length })
 
   // Add User Message
   messages.value.push({
@@ -401,6 +406,7 @@ const submitMessage = () => {
 
 // Send suggestion pill
 const sendSuggestion = (pillText) => {
+  posthog.capture('chat_suggestion_clicked', { suggestion: pillText })
   sendMessage(pillText);
 };
 

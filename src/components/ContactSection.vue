@@ -251,6 +251,7 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue';
 import ChatWidget from './ChatWidget.vue';
+import posthog from 'posthog-js';
 
 const isStructuredForm = ref(false);
 
@@ -355,6 +356,7 @@ const toggleFormMode = () => {
     syncSimpleToStructured();
     isStructuredForm.value = true;
   }
+  posthog.capture('contact_form_mode_toggled', { new_mode: isStructuredForm.value ? 'structured' : 'simple' })
 };
 
 const handlePrefill = (data) => {
@@ -422,6 +424,12 @@ const handleFormSubmit = async () => {
     });
 
     if (response.ok) {
+      posthog.identify(formData.value.email, { name: formData.value.name })
+      posthog.capture('contact_form_submitted', {
+        form_mode: isStructuredForm.value ? 'structured' : 'simple',
+        has_tools: !!formData.value.outils_existants.trim(),
+        has_volume: !!formData.value.volume_estime.trim(),
+      })
       localStorage.setItem('contact_name', formData.value.name);
       localStorage.setItem('contact_email', formData.value.email);
       emailTouched.value = false;
@@ -445,7 +453,9 @@ const handleFormSubmit = async () => {
     }
   } catch (error) {
     console.error("Erreur de transmission :", error);
-    
+    posthog.captureException(error)
+    posthog.capture('contact_form_submission_failed')
+
     // Construct prefilled mailto URL
     const subjectEncoded = encodeURIComponent(`Nouveau projet : ${formData.value.subject || 'Cahier des charges'}`);
     const bodyText = `Bonjour Jérémy,

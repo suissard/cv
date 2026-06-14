@@ -26,10 +26,10 @@
 
         <!-- Call to actions directs -->
         <div class="reveal stagger-4 flex flex-col sm:flex-row gap-4 pt-2">
-          <a href="#contact" class="cta-shimmer px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-center text-white hover:shadow-xl hover:shadow-cyber-primary/20 hover:scale-[1.02] transition-all duration-300">
+          <a href="#contact" @click="trackCta('Simplifier mon quotidien maintenant')" class="cta-shimmer px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-center text-white hover:shadow-xl hover:shadow-cyber-primary/20 hover:scale-[1.02] transition-all duration-300">
             🚀 Simplifier mon quotidien maintenant
           </a>
-          <a href="#cas-pratiques" class="px-6 py-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 font-bold text-sm text-center text-white transition-all duration-300">
+          <a href="#cas-pratiques" @click="trackCta('Voir des exemples concrets')" class="px-6 py-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 font-bold text-sm text-center text-white transition-all duration-300">
             💡 Voir des exemples concrets
           </a>
         </div>
@@ -75,4 +75,9 @@
 </template>
 
 <script setup>
+import posthog from 'posthog-js'
+
+const trackCta = (label) => {
+  posthog.capture('hero_cta_clicked', { cta_label: label })
+}
 </script>

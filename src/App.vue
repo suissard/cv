@@ -17,6 +17,7 @@
     <ContactSection />
     <AppFooter @open-legal="isLegalModalOpen = true" />
     <LegalModal :isOpen="isLegalModalOpen" @close="isLegalModalOpen = false" />
+    <CookieBanner @open-legal="isLegalModalOpen = true" />
   </div>
 </template>
 
@@ -30,6 +31,7 @@ import ContactSection from './components/ContactSection.vue';
 import AppFooter from './components/AppFooter.vue';
 import LegalModal from './components/LegalModal.vue';
 import Background3D from './components/Background3D.vue';
+import CookieBanner from './components/CookieBanner.vue';
 
 const isLegalModalOpen = ref(false);
 

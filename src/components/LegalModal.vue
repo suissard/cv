@@ -8,7 +8,7 @@
       <div class="glass-card max-w-lg w-full rounded-2xl border-white/10 p-6 space-y-4 max-h-[85vh] overflow-y-auto relative z-10 glow-hover" @click.stop>
         <div class="flex justify-between items-center border-b border-white/5 pb-3">
           <h3 class="text-base font-bold font-display text-white flex items-center gap-2">
-            <span>⚖️ Mentions Légales</span>
+            <span><i class="fa-solid fa-scale-balanced mr-1.5"></i>Mentions Légales</span>
           </h3>
           <button @click="closeModal" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all text-lg font-bold">&times;</button>
         </div>

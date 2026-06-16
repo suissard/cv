@@ -9,7 +9,7 @@
         <span class="font-display font-medium text-gray-400">clavier.dev &copy; 2026</span>
       </div>
       <div class="flex items-center space-x-4">
-        <span class="text-gray-500 text-[11px]">Conçu avec <span class="text-rose-400">♥</span> et beaucoup d'automatisation</span>
+        <span class="text-gray-500 text-[11px]">Conçu avec <i class="fa-solid fa-heart text-rose-400 mx-0.5"></i> et beaucoup d'automatisation</span>
         <span class="text-gray-600">·</span>
         <button @click="$emit('open-legal')" class="hover:text-white transition-colors duration-200 cursor-pointer text-[11px] underline underline-offset-4 decoration-white/20 hover:decoration-white/60">
           Mentions légales

@@ -23,7 +23,7 @@
             <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></span>
             <span class="w-2.5 h-2.5 rounded-full bg-green-500/50"></span>
             <span class="ml-3 text-[11px] font-semibold text-gray-400 flex items-center gap-1.5">
-              <span>📋</span> Formulaire
+              <span><i class="fa-solid fa-clipboard-list mr-1"></i></span> Formulaire
               <span v-if="isStructuredForm" class="flex h-2 w-2 relative ml-1">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-accent opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-cyber-accent"></span>
@@ -49,7 +49,7 @@
               @click="resetFormState"
               class="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-300 cursor-pointer"
             >
-              🔄 Nouveau projet
+              <i class="fa-solid fa-arrows-rotate mr-1"></i> Nouveau projet
             </button>
           </div>
 
@@ -86,7 +86,7 @@
                     attentionFields && !formData.email.trim() ? 'field-attention border-cyber-accent/50' : 'border-white/10 focus:border-cyber-primary/50']"
                 >
                 <span v-if="isEmailInvalid" class="text-[9px] text-red-400 block mt-1">
-                  ⚠️ Format d'e-mail incorrect. Exemple : nom@domaine.fr
+                  <i class="fa-solid fa-triangle-exclamation mr-1"></i> Format d'e-mail incorrect. Exemple : nom@domaine.fr
                 </span>
               </div>
             </div>
@@ -97,7 +97,7 @@
               <div class="flex items-center justify-between pb-3">
                 <div class="flex items-center gap-2">
                   <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                    {{ isStructuredForm ? '📁 Cahier des charges IA' : '📝 Description simple' }}
+                    <i :class="['fa-solid', isStructuredForm ? 'fa-folder-open' : 'fa-file-signature', 'mr-1']"></i> {{ isStructuredForm ? 'Cahier des charges IA' : 'Description simple' }}
                   </span>
                 </div>
                 <button 
@@ -140,7 +140,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div class="space-y-1.5">
                     <label class="block text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                      <span>⚠️ Situation actuelle (Pain points)</span>
+                      <span><i class="fa-solid fa-triangle-exclamation mr-1.5 text-cyber-accent"></i> Situation actuelle (Pain points)</span>
                     </label>
                     <textarea 
                       v-model="formData.situation_actuelle" 
@@ -153,7 +153,7 @@
 
                   <div class="space-y-1.5">
                     <label class="block text-[10px] font-bold uppercase tracking-wider text-cyber-accent flex items-center gap-1">
-                      <span>⚙️ Solution souhaitée</span>
+                      <span><i class="fa-solid fa-gear mr-1.5 text-cyber-accent"></i> Solution souhaitée</span>
                     </label>
                     <textarea 
                       v-model="formData.solution_automatisee" 
@@ -168,7 +168,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div class="space-y-1.5">
                     <label class="block text-[10px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1">
-                      <span>🔧 Outils déjà utilisés</span>
+                      <span><i class="fa-solid fa-wrench mr-1.5 text-cyber-accent"></i> Outils déjà utilisés</span>
                     </label>
                     <input 
                       type="text"
@@ -180,7 +180,7 @@
 
                   <div class="space-y-1.5">
                     <label class="block text-[10px] font-bold uppercase tracking-wider text-orange-400 flex items-center gap-1">
-                      <span>📊 Volume / Fréquence</span>
+                      <span><i class="fa-solid fa-chart-column mr-1.5 text-cyber-accent"></i> Volume / Fréquence</span>
                     </label>
                     <input 
                       type="text"
@@ -193,7 +193,7 @@
 
                 <div class="space-y-1.5">
                   <label class="block text-[10px] font-bold uppercase tracking-wider text-fuchsia-400 flex items-center gap-1">
-                    <span>🧘 Bénéfice & Sérénité attendus</span>
+                    <span><i class="fa-solid fa-spa mr-1.5 text-cyber-accent"></i> Bénéfice & Sérénité attendus</span>
                   </label>
                   <textarea 
                     v-model="formData.impact_serenite" 
@@ -212,7 +212,7 @@
               :disabled="isSubmitting || !isFormValid"
               class="cta-shimmer w-full py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-white hover:shadow-lg hover:shadow-cyber-primary/20 hover:scale-[1.01] transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              <span v-if="!isSubmitting">⚡ Envoyer mon projet</span>
+              <span v-if="!isSubmitting"><i class="fa-solid fa-bolt mr-1.5"></i> Envoyer mon projet</span>
               <span v-else><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Envoi en cours...</span>
             </button>
           </form>
@@ -475,11 +475,11 @@ ${formData.value.email || ''}`;
     feedback.value = {
       html: `
         <div class="text-left space-y-3">
-            <strong class="block text-amber-400 font-bold mb-1">📬 Erreur de transmission automatique !</strong>
+            <strong class="block text-amber-400 font-bold mb-1"><i class="fa-solid fa-envelope-open-text mr-1.5"></i> Erreur de transmission automatique !</strong>
             <p class="text-gray-300 text-xs">Le service rencontre une perturbation temporaire. Pour ne pas perdre votre saisie, vous pouvez l'envoyer directement par e-mail en un clic.</p>
             <div class="flex flex-wrap gap-2 pt-1">
                 <a href="${mailtoUrl}" class="px-3.5 py-2 bg-gradient-to-r from-cyber-primary to-cyber-secondary hover:brightness-110 text-white rounded-lg font-bold text-[10px] transition-all hover:scale-[1.02] flex items-center gap-1.5 shadow-md shadow-cyber-primary/20">
-                    📧 Envoyer par e-mail direct (Pré-rempli)
+                    <i class="fa-solid fa-envelope mr-1.5"></i> Envoyer par e-mail direct (Pré-rempli)
                 </a>
             </div>
         </div>

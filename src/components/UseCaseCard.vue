@@ -6,7 +6,7 @@
       <div class="card-front absolute inset-0 glass-card glow-hover-rose p-5 rounded-2xl border-rose-500/20 flex flex-col justify-between transition-all">
         <div class="space-y-3">
           <div class="flex justify-between items-center">
-            <span class="text-2xl">{{ problem.icon }}</span>
+            <i :class="[problem.icon, 'text-2xl']"></i>
             <span class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">La situation</span>
           </div>
           <h3 class="text-sm font-bold text-white font-display">{{ problem.title }}</h3>
@@ -24,7 +24,7 @@
       <div class="card-back absolute inset-0 glass-card glow-hover-emerald p-5 rounded-2xl border-emerald-500/20 flex flex-col justify-between">
         <div class="space-y-3">
           <div class="flex justify-between items-center">
-            <span class="text-2xl">{{ solution.icon }}</span>
+            <i :class="[solution.icon, 'text-2xl']"></i>
             <span class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">La solution</span>
           </div>
           <h3 class="text-sm font-bold text-white font-display">{{ solution.title }}</h3>

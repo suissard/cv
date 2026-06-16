@@ -23,7 +23,7 @@
           href="#contact"
           class="cta-shimmer px-5 py-2 rounded-full bg-gradient-to-r from-cyber-primary to-cyber-secondary hover:shadow-lg hover:shadow-cyber-primary/25 text-xs font-bold text-white transition-all duration-300 transform hover:scale-105"
         >
-          ⚡ Proposer un projet
+          <i class="fa-solid fa-bolt mr-1.5"></i> Proposer un projet
         </a>
         
         <!-- The placeholder and logic for the floating chat button -->

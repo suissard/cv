@@ -20,17 +20,17 @@
             </span>
           </h1>
           <p class="reveal stagger-3 text-gray-300 text-sm sm:text-base max-w-xl leading-relaxed">
-            Indépendants, artisans, PME : je connecte intelligemment vos outils du quotidien pour automatiser vos tâches administratives et répétitives. Zéro oubli, moins de paperasse, l'esprit léger. ☕
+            Indépendants, artisans, PME : je connecte intelligemment vos outils du quotidien pour automatiser vos tâches administratives et répétitives. Zéro oubli, moins de paperasse, l'esprit léger. <i class="fa-solid fa-mug-hot text-cyber-accent"></i>
           </p>
         </div>
 
         <!-- Call to actions directs -->
         <div class="reveal stagger-4 flex flex-col sm:flex-row gap-4 pt-2">
           <a href="#contact" @click="trackCta('Simplifier mon quotidien maintenant')" class="cta-shimmer px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyber-primary to-cyber-secondary font-bold text-sm text-center text-white hover:shadow-xl hover:shadow-cyber-primary/20 hover:scale-[1.02] transition-all duration-300">
-            🚀 Simplifier mon quotidien maintenant
+            <i class="fa-solid fa-rocket mr-1.5"></i> Simplifier mon quotidien maintenant
           </a>
           <a href="#cas-pratiques" @click="trackCta('Voir des exemples concrets')" class="px-6 py-3.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 font-bold text-sm text-center text-white transition-all duration-300">
-            💡 Voir des exemples concrets
+            <i class="fa-solid fa-lightbulb mr-1.5"></i> Voir des exemples concrets
           </a>
         </div>
       </div>
@@ -47,21 +47,21 @@
           </h3>
           <div class="space-y-3">
             <div class="feature-item flex items-start space-x-3 text-xs bg-white/5 p-3.5 rounded-xl border border-white/5 cursor-default">
-              <span class="text-lg animate-float" style="animation-delay: 0s;">🔗</span>
+              <span class="text-lg animate-float" style="animation-delay: 0s;"><i class="fa-solid fa-link text-cyber-accent"></i></span>
               <div>
                 <h4 class="font-bold text-white text-sm">Des outils simples, qui communiquent entre eux</h4>
                 <p class="text-gray-400 text-xs mt-0.5">Prise de rdv, factures et fichiers synchronisés instantanément.</p>
               </div>
             </div>
             <div class="feature-item flex items-start space-x-3 text-xs bg-white/5 p-3.5 rounded-xl border border-white/5 cursor-default">
-              <span class="text-lg animate-float" style="animation-delay: 1s;">🤖</span>
+              <span class="text-lg animate-float" style="animation-delay: 1s;"><i class="fa-solid fa-robot text-cyber-accent"></i></span>
               <div>
                 <h4 class="font-bold text-white text-sm">Zéro prospect oublié</h4>
                 <p class="text-gray-400 text-xs mt-0.5">Une IA qualifie les demandes de devis même durant vos rendez-vous.</p>
               </div>
             </div>
             <div class="feature-item flex items-start space-x-3 text-xs bg-white/5 p-3.5 rounded-xl border border-white/5 cursor-default">
-              <span class="text-lg animate-float" style="animation-delay: 2s;">🧘</span>
+              <span class="text-lg animate-float" style="animation-delay: 2s;"><i class="fa-solid fa-spa text-cyber-accent"></i></span>
               <div>
                 <h4 class="font-bold text-white text-sm">Concentration maximale</h4>
                 <p class="text-gray-400 text-xs mt-0.5">Plus besoin de courir après les relances le soir ou le week-end.</p>

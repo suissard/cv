@@ -1,19 +1,10 @@
 <template>
   <div 
-    class="chat-container flex flex-col h-full bg-dark-base rounded-b-2xl overflow-hidden relative font-sans text-gray-200"
+    class="chat-container flex flex-col h-full bg-transparent rounded-b-2xl overflow-hidden relative font-sans text-gray-200"
     @click="handleContainerClick"
   >
     
-    <!-- Action Toolbar (Floating Top Right) -->
-    <div class="absolute top-3 right-3 z-20">
-      <button 
-        @click="resetChat" 
-        title="Recommencer la conversation"
-        class="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 text-gray-400 hover:text-white transition-all duration-200 flex items-center justify-center backdrop-blur-md"
-      >
-        <i class="fa-solid fa-arrows-rotate text-xs"></i>
-      </button>
-    </div>
+
 
     <!-- Messages Body -->
     <div 
@@ -64,7 +55,7 @@
                 class="px-3.5 py-1.5 rounded-lg bg-cyber-accent/10 hover:bg-cyber-accent/20 border border-cyber-accent/30 hover:border-cyber-accent text-cyber-accent text-[11px] font-bold transition-all duration-300 flex items-center gap-1.5 shadow-sm shadow-cyber-accent/5 hover:scale-[1.02] cursor-pointer"
               >
                 <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i>
-                <span>📋 Charger la synthèse dans le formulaire</span>
+                <span>Charger la synthèse dans le formulaire</span>
               </button>
             </div>
 
@@ -77,7 +68,7 @@
                 @click="emit('switch-tab', 'form')"
                 class="px-3.5 py-1.5 rounded-lg bg-cyber-accent/10 hover:bg-cyber-accent/20 border border-cyber-accent/30 hover:border-cyber-accent text-cyber-accent text-[11px] font-bold transition-all duration-300 flex items-center gap-1.5 shadow-sm shadow-cyber-accent/5 hover:scale-[1.02] cursor-pointer"
               >
-                <span>📋 Accéder au formulaire</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-clipboard-list"></i> Accéder au formulaire</span>
                 <i class="fa-solid fa-arrow-right text-[10px]"></i>
               </button>
             </div>
@@ -116,7 +107,7 @@
     </div>
 
     <!-- Input Box -->
-    <div class="p-4 border-t border-white/5 bg-[#030305]/80 backdrop-blur-md">
+    <div class="p-4 border-t border-white/5 bg-transparent backdrop-blur-md">
       <form 
         @submit.prevent="submitMessage" 
         class="flex items-end gap-2 bg-[#0a0b10] border border-white/5 rounded-xl p-1 focus-within:border-cyber-primary/40 focus-within:ring-1 focus-within:ring-cyber-primary/20 transition-all duration-300"
@@ -134,7 +125,7 @@
         <button
           type="submit"
           :disabled="isLoading || !inputValue.trim()"
-          class="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-r from-cyber-primary to-cyber-secondary text-white hover:scale-105 hover:shadow-lg hover:shadow-cyber-primary/20 active:scale-95 disabled:opacity-30 disabled:scale-100 disabled:shadow-none transition-all duration-200 cursor-pointer flex-shrink-0 mb-0.5 mr-0.5"
+          class="flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-r from-cyber-primary to-cyber-secondary text-white hover:scale-105 hover:shadow-lg hover:shadow-cyber-primary/20 active:scale-95 disabled:opacity-30 disabled:scale-100 disabled:shadow-none transition-all duration-200 cursor-pointer flex-shrink-0 mb-0.5 mr-0.5"
         >
           <i class="fa-solid fa-paper-plane text-xs"></i>
         </button>
@@ -240,23 +231,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (scrollInterval) clearInterval(scrollInterval);
 });
-
-// Resets conversation
-const resetChat = () => {
-  posthog.capture('chat_reset')
-  sessionStorage.removeItem('chat_session_id');
-  messages.value = [
-    {
-      id: 'welcome-' + Date.now(),
-      sender: 'bot',
-      text: "Comment souhaitez vous améliorer votre quotidien ?",
-      html: '<p>Comment souhaitez vous améliorer votre quotidien ?</p>',
-      animate: true
-    }
-  ];
-  startAutoScroll();
-};
-
 
 
 const cleanStringForMatching = (str) => {
@@ -389,7 +363,7 @@ const sendMessage = async (text) => {
       id: 'error-' + Date.now(),
       sender: 'bot',
       text: "Une erreur de connexion est survenue. Veuillez vérifier votre réseau ou me contacter directement par e-mail à jeremy@clavier.dev.",
-      html: '<p class="text-rose-400 font-bold mb-1">⚠️ Erreur de connexion</p><p class="text-gray-300">Une erreur est survenue lors de la communication avec l\'assistant. Vous pouvez réessayer ou m\'écrire directement par email à <a href="mailto:jeremy@clavier.dev" class="text-cyber-accent underline">jeremy@clavier.dev</a>.</p>',
+      html: '<p class="text-rose-400 font-bold mb-1"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Erreur de connexion</p><p class="text-gray-300">Une erreur est survenue lors de la communication avec l\'assistant. Vous pouvez réessayer ou m\'écrire directement par email à <a href="mailto:jeremy@clavier.dev" class="text-cyber-accent underline">jeremy@clavier.dev</a>.</p>',
       animate: true
     });
   } finally {

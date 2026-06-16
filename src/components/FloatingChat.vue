@@ -1,6 +1,6 @@
 <template>
   <!-- Placeholder dynamically expands to make room for the text when docked -->
-  <div ref="placeholderRef" :class="['h-10 hidden sm:block relative transition-all duration-500', isScrolled ? 'w-10' : 'w-[170px]']"></div>
+  <div ref="placeholderRef" :class="['h-10 relative transition-all duration-500', isScrolled ? 'w-10' : 'w-10 sm:w-[170px]']"></div>
 
   <!-- Teleport the fixed elements to body so they are not constrained by any overflow hidden -->
   <Teleport to="body">

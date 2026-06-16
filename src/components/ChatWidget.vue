@@ -386,12 +386,10 @@ const sendSuggestion = (pillText) => {
 
 // Input box Enter key handler
 const onEnterKey = (e) => {
-  // Mobile devices: enter key just line-breaks, desktop: sends message unless Shift is pressed
-  const isMobile = window.innerWidth <= 640;
-  if (!isMobile) {
-    submitMessage();
-  } else {
+  if (e.shiftKey) {
     inputValue.value += '\n';
+  } else {
+    submitMessage();
   }
 };
 

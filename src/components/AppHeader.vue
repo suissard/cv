@@ -14,14 +14,14 @@
         />
         <div>
           <span class="font-display font-bold tracking-wide text-base text-white">clavier.dev</span>
-          <span class="block text-[9px] text-cyber-accent uppercase tracking-widest font-semibold">Automatisation & Applications</span>
+          <span class="hidden sm:block text-[9px] text-cyber-accent uppercase tracking-widest font-semibold">Automatisation & Applications</span>
         </div>
       </a>
 
       <div class="flex items-center space-x-3 sm:space-x-4">
         <a
           href="#contact"
-          class="cta-shimmer px-5 py-2 rounded-full bg-gradient-to-r from-cyber-primary to-cyber-secondary hover:shadow-lg hover:shadow-cyber-primary/25 text-xs font-bold text-white transition-all duration-300 transform hover:scale-105"
+          class="cta-shimmer px-4 sm:px-5 py-2 rounded-full bg-gradient-to-r from-cyber-primary to-cyber-secondary hover:shadow-lg hover:shadow-cyber-primary/25 text-[11px] sm:text-xs font-bold text-white transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
         >
           <i class="fa-solid fa-bolt mr-1.5"></i> Proposer un projet
         </a>

@@ -7,7 +7,7 @@
       <span class="reveal badge-pill text-cyber-accent font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full border border-cyber-accent/20 bg-cyber-accent/5 inline-block font-display">Lancez-vous</span>
       <h2 class="reveal stagger-1 text-2xl sm:text-4xl font-bold font-display text-white">Passez de l'idée à la réalité !</h2>
       <p class="reveal stagger-2 text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
-        Décrivez vos besoins, on les traduira en automatisations. Vous pouvez aussi m'écrire en direct.
+        Décrivez vos besoins, on les traduira en automatisations.
       </p>
     </div>
 

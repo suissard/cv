@@ -135,13 +135,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed, onBeforeUnmount } from 'vue';
+import { ref, onMounted, nextTick, computed, onBeforeUnmount, watch } from 'vue';
 import { marked } from 'marked';
 import TypewriterText from './TypewriterText.vue';
 import suggestionsConfig from '../data/suggestions.json';
 import posthog from 'posthog-js';
 
-const emit = defineEmits(['switch-tab', 'prefill-form']);
+const emit = defineEmits(['switch-tab', 'prefill-form', 'talking-status']);
 
 const prefillForm = (data) => {
   emit('prefill-form', data);
@@ -404,6 +404,27 @@ const handleContainerClick = (e) => {
   }
   textareaRef.value?.focus();
 };
+
+const isBotTalking = computed(() => {
+  return isLoading.value || messages.value.some(m => m.animate);
+});
+
+const isUserTyping = ref(false);
+let typingTimer = null;
+
+watch(isBotTalking, (val) => {
+  emit('talking-status', { bot: val, user: isUserTyping.value });
+});
+
+watch(inputValue, () => {
+  isUserTyping.value = true;
+  emit('talking-status', { bot: isBotTalking.value, user: true });
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(() => {
+    isUserTyping.value = false;
+    emit('talking-status', { bot: isBotTalking.value, user: false });
+  }, 300);
+});
 </script>
 
 <style scoped>

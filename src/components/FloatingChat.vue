@@ -1,13 +1,10 @@
 <template>
-  <!-- Placeholder dynamically expands to make room for the text when docked -->
-  <div ref="placeholderRef" :class="['h-10 relative transition-all duration-500', isScrolled ? 'w-10' : 'w-10 sm:w-[170px]']"></div>
-
   <!-- Teleport the fixed elements to body so they are not constrained by any overflow hidden -->
   <Teleport to="body">
     <Transition name="chat-window">
-      <div v-if="isOpen" class="fixed top-[92px] right-6 sm:right-10 w-[380px] max-w-[calc(100vw-3rem)] h-[550px] max-h-[calc(100vh-8rem)] z-[100] rounded-2xl glass-card overflow-hidden flex flex-col">
+      <div v-show="isOpen" class="fixed right-6 sm:right-10 w-[380px] max-w-[calc(100vw-3rem)] h-[550px] max-h-[calc(100vh-8rem)] z-[120] rounded-2xl glass-card overflow-hidden flex flex-col shadow-2xl origin-bottom-right" style="bottom: 100px;">
         <!-- Add a header to the chat window -->
-        <div class="bg-white/[0.02] border-b border-white/5 px-4 py-3 flex items-center justify-between">
+        <div class="bg-white/[0.05] border-b border-white/10 px-4 py-3 flex items-center justify-between">
           <div class="flex items-center space-x-2">
              <span class="w-2.5 h-2.5 rounded-full bg-red-500/50"></span>
              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></span>
@@ -16,12 +13,15 @@
                <i class="fa-solid fa-message text-[10px]"></i> Assistant IA
              </span>
           </div>
-          <!-- Placeholder to maintain layout since we use floating button to close -->
-          <div class="w-8 h-8"></div>
+          <!-- Close button -->
+          <button @click="isOpen = false" class="w-7 h-7 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
         </div>
         <ChatWidget 
           @switch-tab="closeChatAndScrollToForm" 
           @prefill-form="handlePrefillEvent" 
+          @talking-status="handleTalkingStatus"
           class="flex-1 rounded-none border-none" 
         />
       </div>
@@ -29,35 +29,24 @@
 
     <button 
       @click="isOpen = !isOpen"
-      class="fixed z-[110] flex items-center justify-center transition-all duration-[700ms] chat-btn-anim cursor-pointer group shadow-[0_0_15px_rgba(20,184,166,0.2)] isolate"
+      class="fixed z-[110] flex items-center justify-center transition-all duration-[700ms] chat-btn-anim cursor-pointer group shadow-[0_0_15px_rgba(20,184,166,0.2)] isolate floating-chat-btn"
       :class="[
-        isOpen ? 'chat-open-btn bg-cyber-accent hover:bg-cyber-accent/80 border-2 border-transparent' :
-        (isScrolled 
-          ? 'floating-chat-btn bg-cyber-accent hover:bg-cyber-accent/80 pb-[14px]' 
-          : 'docked-chat-btn border-2 border-cyber-accent bg-[#0a0b10] hover:bg-cyber-accent/10 hover:scale-105')
+        'bg-cyber-accent hover:bg-cyber-accent/80',
+        !isOpen && showIntroBubble ? 'animate-strong-float' : (!isOpen ? 'animate-soft-float' : '')
       ]"
-      :style="(isScrolled || isOpen) ? {} : dockedStyle"
       :title="isOpen ? 'Fermer le chat' : 'Ouvrir le chat IA'"
     >
-      <div v-if="isScrolled" class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[inherit]"></div>
-      
-      <!-- Text inside button when docked -->
-      <span 
-        class="hidden sm:inline-block font-bold transition-all duration-500 overflow-hidden whitespace-nowrap"
-        :class="(isScrolled || isOpen) ? 'max-w-0 opacity-0 ml-0 mr-0 text-[0px]' : 'max-w-[150px] opacity-100 ml-3 mr-2 text-[10px] sm:text-[11px] text-cyber-accent'"
-      >
-        Sollicitez l'assistant IA
-      </span>
+      <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[inherit]"></div>
 
-      <!-- Icon -->
-      <i 
-        :class="[
-          isOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-robot',
-          'relative z-10 transition-all duration-300',
-          isOpen ? 'text-xl text-black' : (isScrolled ? 'text-2xl text-black' : 'text-lg text-cyber-accent sm:mr-3')
-        ]"
-        :style="(isScrolled || isOpen) ? { mixBlendMode: 'destination-out' } : {}"
-      ></i>
+      <div class="relative z-10 flex flex-col items-center justify-center transition-all duration-300 h-full w-full pb-[14px]"
+           :style="{ mixBlendMode: 'destination-out' }">
+        <i class="fa-solid fa-robot text-2xl text-black"></i>
+        
+        <!-- The Mouth -->
+        <div class="bg-black transition-all -mt-[5px]"
+             :class="isTalking ? 'animate-mouth-talk' : 'w-[10px] h-[2.5px] rounded-full duration-300'">
+        </div>
+      </div>
     </button>
 
     <!-- Intro Bubble (placed outside button to avoid clip-path masking) -->
@@ -86,67 +75,34 @@ const props = defineProps({
   isScrolled: Boolean
 });
 
-const placeholderRef = ref(null);
-const dockedStyle = ref({ top: '16px', right: '24px' });
 const isOpen = ref(false);
 const showIntroBubble = ref(false);
 const hasShownIntro = ref(false);
 const introPhrase = suggestionsConfig.welcomeMessage;
 let introTimeout = null;
 
-const updateDockedPosition = () => {
-  if (placeholderRef.value) {
-    const rect = placeholderRef.value.getBoundingClientRect();
-    if (rect.width > 0) {
-      // Calculate right position relative to viewport
-      const rightPos = window.innerWidth - rect.right;
-      dockedStyle.value = {
-        top: `${rect.top}px`,
-        right: `${rightPos}px`
-      };
-    } else {
-      // Fallback for mobile where placeholder might be hidden
-      dockedStyle.value = {
-        top: '16px',
-        right: '24px'
-      };
-    }
-  }
+const isTalking = ref(false);
+
+const handleTalkingStatus = (status) => {
+  isTalking.value = status.bot || status.user;
 };
 
-watch(() => props.isScrolled, (newVal) => {
-  // Update docked position right before transitioning in case of resize
-  if (!newVal) {
-    nextTick(() => {
-      updateDockedPosition();
-    });
-    showIntroBubble.value = false;
-  } else {
-    // Show intro bubble when it becomes floating (out of menu bar)
-    if (!isOpen.value && !hasShownIntro.value) {
-      setTimeout(() => {
-        if (!isOpen.value && props.isScrolled) {
-          showIntroBubble.value = true;
-          hasShownIntro.value = true;
-          
-          if (introTimeout) clearTimeout(introTimeout);
-          introTimeout = setTimeout(() => {
-            showIntroBubble.value = false;
-          }, 10000);
-        }
-      }, 700); // Wait for the transition to floating to complete
-    }
-  }
-}, { immediate: true });
-
 onMounted(() => {
-  window.addEventListener('resize', updateDockedPosition);
-  // Initial calculation after DOM is fully rendered
-  setTimeout(updateDockedPosition, 100);
+  if (!hasShownIntro.value) {
+    setTimeout(() => {
+      if (!isOpen.value) {
+        showIntroBubble.value = true;
+        hasShownIntro.value = true;
+        
+        introTimeout = setTimeout(() => {
+          showIntroBubble.value = false;
+        }, 10000);
+      }
+    }, 2000);
+  }
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', updateDockedPosition);
   if (introTimeout) clearTimeout(introTimeout);
 });
 
@@ -172,42 +128,17 @@ const handlePrefillEvent = (data) => {
   transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.docked-chat-btn {
-  width: 170px;
-  height: 40px;
-  border-radius: 9999px;
-}
-
-.chat-open-btn {
-  top: 99px;
-  right: 33px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-}
-
-@media (max-width: 639px) {
-  .docked-chat-btn {
-    width: 40px;
-  }
-}
-
 .floating-chat-btn {
-  /* Stay high up, just below the navbar */
-  top: 88px; /* 5.5rem */
+  bottom: 24px;
   right: 24px;
   width: 56px;
   height: 70px; /* 56px body + 14px tail */
-  /* Custom SVG path to create a perfect 56x56 square body with a downward tail shifted slightly left */
   clip-path: path('M 16 0 H 40 Q 56 0 56 16 V 48 Q 56 56 48 56 L 45 70 L 32 56 H 16 Q 0 56 0 40 V 16 Q 0 0 16 0 Z');
 }
 
 @media (min-width: 640px) {
   .floating-chat-btn {
-    right: 40px; /* sm:right-10 */
-  }
-  .chat-open-btn {
-    right: 49px;
+    right: 40px;
   }
 }
 
@@ -218,8 +149,8 @@ const handlePrefillEvent = (data) => {
 .chat-window-enter-from,
 .chat-window-leave-to {
   opacity: 0;
-  transform: translateY(-20px) scale(0.95);
-  transform-origin: top right;
+  transform: translateY(20px) scale(0.95);
+  transform-origin: bottom right;
 }
 
 .fade-slide-enter-active,
@@ -229,18 +160,44 @@ const handlePrefillEvent = (data) => {
 .fade-slide-enter-from,
 .fade-slide-leave-to {
   opacity: 0;
-  transform: translate(10px, -50%);
+  transform: translate(10px, 50%);
 }
 
 .intro-bubble-fixed {
-  top: 116px; /* 88px (button top) + 28px (half of 56px body) */
-  right: 80px; /* 24px (button right) + 56px (button width) */
-  transform: translateY(-50%);
+  bottom: 66px; 
+  right: 86px; 
+  transform: translateY(50%);
 }
 
 @media (min-width: 640px) {
   .intro-bubble-fixed {
-    right: 96px; /* 40px (sm:right-10) + 56px */
+    right: 102px;
   }
+}
+
+@keyframes soft-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-soft-float {
+  animation: soft-float 4s ease-in-out infinite;
+}
+
+@keyframes strong-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-10px) rotate(-4deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(-10px) rotate(4deg); }
+}
+.animate-strong-float {
+  animation: strong-float 1.5s ease-in-out infinite;
+}
+
+@keyframes mouth-talk {
+  0% { height: 2.5px; width: 15px; border-radius: 9999px; }
+  100% { height: 8px; width: 10px; border-radius: 50%; }
+}
+.animate-mouth-talk {
+  animation: mouth-talk 0.15s infinite alternate;
 }
 </style>

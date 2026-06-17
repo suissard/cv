@@ -25,9 +25,6 @@
         >
           <i class="fa-solid fa-bolt mr-1.5"></i> Proposer un projet
         </a>
-        
-        <!-- The placeholder and logic for the floating chat button -->
-        <FloatingChat :isScrolled="isScrolled" />
       </div>
     </div>
   </header>
@@ -35,7 +32,6 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import FloatingChat from './FloatingChat.vue';
 
 const isScrolled = ref(false);
 

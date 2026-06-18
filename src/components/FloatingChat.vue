@@ -2,7 +2,7 @@
   <!-- Teleport the fixed elements to body so they are not constrained by any overflow hidden -->
   <Teleport to="body">
     <Transition name="chat-window">
-      <div v-show="isOpen" class="fixed right-6 sm:right-10 w-[380px] max-w-[calc(100vw-3rem)] h-[550px] max-h-[calc(100vh-8rem)] z-[120] rounded-2xl glass-card overflow-hidden flex flex-col shadow-2xl origin-bottom-right" style="bottom: 100px;">
+      <div v-show="isOpen" class="fixed right-6 sm:right-10 w-[380px] max-w-[calc(100vw-3rem)] h-[550px] max-h-[calc(100vh-8rem)] z-[120] rounded-2xl glass-card chat-solid-bg overflow-hidden flex flex-col shadow-2xl origin-bottom-right" style="bottom: 100px;">
         <!-- Add a header to the chat window -->
         <div class="bg-white/[0.05] border-b border-white/10 px-4 py-3 flex items-center justify-between">
           <div class="flex items-center space-x-2">
@@ -123,6 +123,11 @@ const handlePrefillEvent = (data) => {
 </script>
 
 <style scoped>
+
+.chat-solid-bg {
+  background: rgba(10, 11, 18, 0.95) !important;
+}
+
 .chat-btn-anim {
   /* Bouncy effect for extraction and insertion */
   transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);

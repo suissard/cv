@@ -2,7 +2,7 @@
   <!-- Teleport the fixed elements to body so they are not constrained by any overflow hidden -->
   <Teleport to="body">
     <Transition name="chat-window">
-      <div v-show="isOpen" class="fixed right-6 sm:right-10 w-[380px] max-w-[calc(100vw-3rem)] h-[550px] max-h-[calc(100vh-8rem)] z-[120] rounded-2xl glass-card chat-solid-bg overflow-hidden flex flex-col shadow-2xl origin-bottom-right" style="bottom: 100px;">
+      <div v-show="isOpen" class="fixed inset-0 sm:inset-auto sm:right-10 sm:bottom-[100px] w-full sm:w-[380px] h-[100dvh] sm:h-[550px] max-w-none sm:max-w-[calc(100vw-3rem)] max-h-none sm:max-h-[calc(100vh-8rem)] z-[120] rounded-none sm:rounded-2xl glass-card overflow-hidden flex flex-col shadow-2xl origin-bottom-right">
         <!-- Add a header to the chat window -->
         <div class="bg-white/[0.05] border-b border-white/10 px-4 py-3 flex items-center justify-between">
           <div class="flex items-center space-x-2">

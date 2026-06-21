@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="chat-container flex flex-col h-full bg-transparent rounded-b-2xl overflow-hidden relative font-sans text-gray-200"
+    class="chat-container flex flex-col h-full bg-transparent rounded-none sm:rounded-b-2xl overflow-hidden relative font-sans text-gray-200"
     @click="handleContainerClick"
   >
     
@@ -14,6 +14,7 @@
       <div 
         v-for="msg in messages" 
         :key="msg.id" 
+        :data-msg-id="msg.id"
         :class="['flex w-full', msg.sender === 'user' ? 'justify-end' : 'justify-start']"
       >
         <!-- User Message Bubble -->
@@ -107,18 +108,27 @@
     </div>
 
     <!-- Input Box -->
-    <div class="p-4 border-t border-white/5 bg-transparent backdrop-blur-md">
+    <div class="chat-input-wrapper p-4 border-t border-white/5 bg-transparent backdrop-blur-md">
       <form 
         @submit.prevent="submitMessage" 
-        class="flex items-end gap-2 bg-[#0a0b10] border border-white/5 rounded-xl p-1 focus-within:border-cyber-primary/40 focus-within:ring-1 focus-within:ring-cyber-primary/20 transition-all duration-300"
+        :class="[
+          'chat-input-form flex items-end gap-2 rounded-xl p-1 transition-all duration-400',
+          inputFocused ? 'is-focused' : '',
+          !inputValue.trim() && !inputFocused && !isLoading ? 'is-idle' : ''
+        ]"
       >
+        <div class="flex items-center gap-1.5 pl-3 pb-2 pt-2 text-cyber-primary/40 flex-shrink-0 self-end">
+          <i class="fa-solid fa-comments text-sm"></i>
+        </div>
         <textarea
           ref="textareaRef"
           v-model="inputValue"
           @keydown.enter.prevent="onEnterKey"
-          placeholder="Posez votre question ici..."
+          @focus="inputFocused = true"
+          @blur="inputFocused = false"
+          placeholder="Votre message..."
           rows="1"
-          class="flex-grow bg-transparent text-white font-mono text-xs sm:text-sm px-3 py-2 outline-none resize-none placeholder-gray-600 max-h-32 min-h-[38px] leading-relaxed"
+          class="flex-grow bg-transparent text-white font-mono text-xs sm:text-sm px-2 py-2 outline-none resize-none placeholder-gray-400 max-h-32 min-h-[38px] leading-relaxed"
           :disabled="isLoading"
         ></textarea>
         
@@ -160,6 +170,7 @@ const messagesContainer = ref(null);
 const textareaRef = ref(null);
 const inputValue = ref('');
 const isLoading = ref(false);
+const inputFocused = ref(false);
 
 // n8n Webhook configuration
 const webhookUrl = 'https://n8n.clavier.dev/webhook/018653bb-fe00-4f2b-915b-b23a201afcb8/chat';
@@ -180,6 +191,9 @@ const getSessionId = () => {
   return id;
 };
 
+// Track the ID of the currently animating bot message
+const animatingMsgId = ref(null);
+
 // Initial messages setup
 const messages = ref([
   {
@@ -196,7 +210,56 @@ const showSuggestions = computed(() => {
   return messages.value.filter(m => m.sender === 'user').length === 0;
 });
 
-// Auto scroll mechanics
+// ── Smart Auto-Scroll ──
+// During typewriter animation, scroll so the bottom of the content is visible
+// BUT never scroll past the point where the first line of the message disappears.
+const smartScroll = () => {
+  const container = messagesContainer.value;
+  if (!container) return;
+
+  // If there's an animating message, clamp scroll so its top stays visible
+  if (animatingMsgId.value) {
+    const msgEl = container.querySelector(`[data-msg-id="${animatingMsgId.value}"]`);
+    if (msgEl) {
+      const containerRect = container.getBoundingClientRect();
+      const msgRect = msgEl.getBoundingClientRect();
+      
+      // Where the top of the message is in absolute scroll terms
+      const msgTopInScroll = msgRect.top - containerRect.top + container.scrollTop;
+      
+      // Maximum scroll position: the message's top sits at the top of the container, with a small padding
+      const maxAllowedScroll = msgTopInScroll - 8;
+      
+      // The "natural" scroll-to-bottom position
+      const bottomScroll = container.scrollHeight - container.clientHeight;
+      
+      // If the content is now taller than the visible area, the scroll would be clamped.
+      // At that point, stop the typewriter and reveal all the text instantly.
+      if (bottomScroll >= maxAllowedScroll) {
+        const msg = messages.value.find(m => m.id === animatingMsgId.value);
+        if (msg && msg.animate) {
+          msg.animate = false;
+        }
+        animatingMsgId.value = null;
+        container.scrollTop = maxAllowedScroll;
+        // Stop the interval — animation is done
+        if (scrollInterval) {
+          clearInterval(scrollInterval);
+          scrollInterval = null;
+        }
+        return;
+      }
+
+      // Otherwise, scroll normally to show new content as it appears
+      container.scrollTop = bottomScroll;
+      return;
+    }
+  }
+
+  // Default: scroll all the way to the bottom (for loading indicators, user messages, etc.)
+  container.scrollTop = container.scrollHeight - container.clientHeight;
+};
+
 const scrollToBottom = () => {
   if (messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
@@ -208,7 +271,7 @@ let scrollInterval = null;
 const startAutoScroll = () => {
   if (scrollInterval) clearInterval(scrollInterval);
   scrollInterval = setInterval(() => {
-    scrollToBottom();
+    smartScroll();
   }, 80);
 };
 
@@ -217,6 +280,7 @@ const stopAutoScroll = () => {
     clearInterval(scrollInterval);
     scrollInterval = null;
   }
+  animatingMsgId.value = null;
   nextTick(() => {
     scrollToBottom();
   });
@@ -225,7 +289,7 @@ const stopAutoScroll = () => {
 onMounted(() => {
   scrollToBottom();
   startAutoScroll();
-  // We stop the welcome message auto-scroll when typewriter finishes (which is handled inside the template)
+  animatingMsgId.value = 'welcome';
 });
 
 onBeforeUnmount(() => {
@@ -271,6 +335,7 @@ const sendMessage = async (text) => {
 
   inputValue.value = '';
   isLoading.value = true;
+  animatingMsgId.value = null; // No bot message animating yet, scroll to bottom for loading indicator
   startAutoScroll();
 
   // Reset textarea height
@@ -285,14 +350,17 @@ const sendMessage = async (text) => {
       // Simulate fake network thinking time
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 500));
       
+      const msgId = 'bot-' + Date.now();
       messages.value.push({
-        id: 'bot-' + Date.now(),
+        id: msgId,
         sender: 'bot',
         text: defaultReply,
         html: marked.parse(defaultReply),
         animate: true,
         structuredData: null
       });
+      // Set this as the animating message so smartScroll pins its top
+      animatingMsgId.value = msgId;
     } catch (e) {
       console.error(e);
     } finally {
@@ -348,14 +416,17 @@ const sendMessage = async (text) => {
       }
     }
 
+    const msgId = 'bot-' + Date.now();
     messages.value.push({
-      id: 'bot-' + Date.now(),
+      id: msgId,
       sender: 'bot',
       text: cleanResponseText,
       html: marked.parse(cleanResponseText),
       animate: true,
       structuredData: structuredData
     });
+    // Set this as the animating message so smartScroll pins its top
+    animatingMsgId.value = msgId;
 
   } catch (error) {
     console.error('Chat webhook error:', error);
@@ -441,6 +512,44 @@ watch(inputValue, () => {
 }
 .scrollbar-custom::-webkit-scrollbar-thumb:hover {
   background: rgba(99, 102, 241, 0.4);
+}
+
+/* ── Chat Input Styling ── */
+.chat-input-form {
+  background: rgba(22, 24, 40, 0.95);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  position: relative;
+}
+
+/* Idle state: visible pulsing glow to attract attention */
+.chat-input-form.is-idle {
+  animation: inputPulse 2.5s ease-in-out infinite;
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 16px -2px rgba(99, 102, 241, 0.2),
+              inset 0 1px 0 rgba(99, 102, 241, 0.08);
+}
+
+/* Focus state: strong glow, no pulse */
+.chat-input-form.is-focused {
+  animation: none;
+  background: rgba(26, 28, 48, 0.98);
+  border-color: rgba(99, 102, 241, 0.6);
+  box-shadow: 0 0 24px -3px rgba(99, 102, 241, 0.35),
+              0 0 8px -1px rgba(99, 102, 241, 0.2),
+              inset 0 1px 0 rgba(99, 102, 241, 0.12);
+}
+
+@keyframes inputPulse {
+  0%, 100% {
+    border-color: rgba(99, 102, 241, 0.18);
+    box-shadow: 0 0 10px -2px rgba(99, 102, 241, 0.12),
+                inset 0 1px 0 rgba(99, 102, 241, 0.05);
+  }
+  50% {
+    border-color: rgba(99, 102, 241, 0.45);
+    box-shadow: 0 0 22px -2px rgba(99, 102, 241, 0.3),
+                inset 0 1px 0 rgba(99, 102, 241, 0.1);
+  }
 }
 
 /* Custom Markdown styling overrides for JetBrains Mono and premium look */

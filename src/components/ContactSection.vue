@@ -279,10 +279,12 @@ onMounted(() => {
   if (savedEmail) formData.value.email = savedEmail;
   
   window.addEventListener('chat-prefill', handleGlobalPrefill);
+  window.addEventListener('chat-live-update', handleLiveUpdate);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('chat-prefill', handleGlobalPrefill);
+  window.removeEventListener('chat-live-update', handleLiveUpdate);
 });
 
 /* ─── Auto-resize textarea ─── */
@@ -348,13 +350,34 @@ const toggleFormMode = () => {
   posthog.capture('contact_form_mode_toggled', { new_mode: isStructuredForm.value ? 'structured' : 'simple' })
 };
 
+const handleLiveUpdate = (e) => {
+  const data = e.detail;
+  
+  if (data.titre_projet) formData.value.subject = data.titre_projet;
+  if (data.subject) formData.value.subject = data.subject;
+  if (data.situation_actuelle) formData.value.situation_actuelle = data.situation_actuelle;
+  if (data.solution_automatisee) formData.value.solution_automatisee = data.solution_automatisee;
+  if (data.impact_serenite) formData.value.impact_serenite = data.impact_serenite;
+  if (data.outils_existants) formData.value.outils_existants = data.outils_existants;
+  if (data.volume_estime) formData.value.volume_estime = data.volume_estime;
+  
+  syncStructuredToSimple();
+  isStructuredForm.value = true;
+  
+  nextTick(() => {
+    document.querySelectorAll('.auto-textarea').forEach(el => autoResize(el));
+  });
+};
+
 const handlePrefill = (data) => {
-  formData.value.subject = data.titre_projet || data.subject || '';
-  formData.value.situation_actuelle = data.situation_actuelle || '';
-  formData.value.solution_automatisee = data.solution_automatisee || '';
-  formData.value.impact_serenite = data.impact_serenite || '';
-  formData.value.outils_existants = data.outils_existants || '';
-  formData.value.volume_estime = data.volume_estime || '';
+  // Merge full prefill just like live update but scroll down
+  if (data.titre_projet) formData.value.subject = data.titre_projet;
+  if (data.subject) formData.value.subject = data.subject;
+  if (data.situation_actuelle) formData.value.situation_actuelle = data.situation_actuelle;
+  if (data.solution_automatisee) formData.value.solution_automatisee = data.solution_automatisee;
+  if (data.impact_serenite) formData.value.impact_serenite = data.impact_serenite;
+  if (data.outils_existants) formData.value.outils_existants = data.outils_existants;
+  if (data.volume_estime) formData.value.volume_estime = data.volume_estime;
   
   syncStructuredToSimple();
   

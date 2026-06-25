@@ -48,16 +48,23 @@
               <div v-else v-html="msg.html"></div>
             </div>
 
-            <!-- Structured Project Synthesis Button -->
-            <div v-if="msg.structuredData && !msg.animate" class="flex justify-start mt-1.5">
-              <button 
-                type="button"
-                @click="prefillForm(msg.structuredData)"
-                class="px-3.5 py-1.5 rounded-lg bg-cyber-accent/10 hover:bg-cyber-accent/20 border border-cyber-accent/30 hover:border-cyber-accent text-cyber-accent text-[11px] font-bold transition-all duration-300 flex items-center gap-1.5 shadow-sm shadow-cyber-accent/5 hover:scale-[1.02] cursor-pointer"
-              >
-                <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i>
-                <span>Charger la synthèse dans le formulaire</span>
-              </button>
+            <!-- Form update link -->
+            <div v-if="msg.structuredData && !msg.animate" class="flex flex-col justify-start mt-2 gap-2 w-full">
+              <div class="flex items-center justify-between px-3.5 py-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)] relative overflow-hidden group animate-fade-in-up">
+                <div class="absolute inset-0 bg-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="flex items-center gap-2 relative z-10">
+                  <i class="fa-solid fa-circle-check text-sm"></i>
+                  <span class="text-xs font-semibold">Formulaire mis à jour</span>
+                </div>
+                <button 
+                  type="button"
+                  @click="emit('switch-tab', 'form')"
+                  class="relative z-10 px-3 py-1.5 rounded-md bg-emerald-500/20 hover:bg-emerald-500/30 text-[10px] text-white font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>Voir</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
             </div>
 
             <!-- CTA form button on the right if "formulaire" is in the message (and no structured card) -->
@@ -151,13 +158,8 @@ import TypewriterText from './TypewriterText.vue';
 import suggestionsConfig from '../data/suggestions.json';
 import posthog from 'posthog-js';
 
-const emit = defineEmits(['switch-tab', 'prefill-form', 'talking-status']);
+const emit = defineEmits(['switch-tab', 'prefill-form', 'talking-status', 'new-bot-message']);
 
-const prefillForm = (data) => {
-  emit('prefill-form', data);
-  emit('switch-tab', 'form');
-  posthog.capture('chat_form_prefilled')
-};
 
 // Configure marked to open links in a new tab
 const renderer = new marked.Renderer();
@@ -361,6 +363,7 @@ const sendMessage = async (text) => {
       });
       // Set this as the animating message so smartScroll pins its top
       animatingMsgId.value = msgId;
+      emit('new-bot-message');
     } catch (e) {
       console.error(e);
     } finally {
@@ -411,6 +414,8 @@ const sendMessage = async (text) => {
         structuredData = JSON.parse(match[1].trim());
         // Clean up responseText for display
         cleanResponseText = responseText.replace(formPattern, '').trim();
+        // Dispatch live update event
+        window.dispatchEvent(new CustomEvent('chat-live-update', { detail: structuredData }));
       } catch (e) {
         console.error("Erreur de parsing du JSON du formulaire :", e);
       }
@@ -427,6 +432,7 @@ const sendMessage = async (text) => {
     });
     // Set this as the animating message so smartScroll pins its top
     animatingMsgId.value = msgId;
+    emit('new-bot-message');
 
   } catch (error) {
     console.error('Chat webhook error:', error);
@@ -499,6 +505,14 @@ watch(inputValue, () => {
 </script>
 
 <style scoped>
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
 /* Scrolled Area styles */
 .scrollbar-custom::-webkit-scrollbar {
   width: 5px;

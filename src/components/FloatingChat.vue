@@ -2,7 +2,7 @@
   <!-- Teleport the fixed elements to body so they are not constrained by any overflow hidden -->
   <Teleport to="body">
     <Transition name="chat-window">
-      <div v-show="isOpen" class="fixed inset-0 sm:inset-auto sm:right-10 sm:bottom-[100px] w-full sm:w-[380px] h-[100dvh] sm:h-[550px] max-w-none sm:max-w-[calc(100vw-3rem)] max-h-none sm:max-h-[calc(100vh-8rem)] z-[120] rounded-none sm:rounded-2xl glass-card overflow-hidden flex flex-col shadow-2xl origin-bottom-right">
+      <div ref="chatWindowRef" v-show="isOpen" class="fixed inset-0 sm:inset-auto sm:right-10 sm:bottom-[100px] w-full sm:w-[380px] h-[100dvh] sm:h-[550px] max-w-none sm:max-w-[calc(100vw-3rem)] max-h-none sm:max-h-[calc(100vh-8rem)] z-[120] rounded-none sm:rounded-2xl glass-card chat-window-bg overflow-hidden flex flex-col shadow-2xl origin-bottom-right">
         <!-- Add a header to the chat window -->
         <div class="bg-white/[0.05] border-b border-white/10 px-4 py-3 flex items-center justify-between">
           <div class="flex items-center space-x-2">
@@ -22,32 +22,43 @@
           @switch-tab="closeChatAndScrollToForm" 
           @prefill-form="handlePrefillEvent" 
           @talking-status="handleTalkingStatus"
+          @new-bot-message="handleNewMessage"
           class="flex-1 rounded-none border-none" 
         />
       </div>
     </Transition>
 
-    <button 
-      @click="isOpen = !isOpen"
-      class="fixed z-[110] flex items-center justify-center transition-all duration-[700ms] chat-btn-anim cursor-pointer group shadow-[0_0_15px_rgba(20,184,166,0.2)] isolate floating-chat-btn"
+    <div
+      ref="floatingBtnRef"
+      class="fixed z-[110] transition-all duration-[700ms] chat-btn-anim isolate floating-chat-wrapper"
       :class="[
-        'bg-cyber-accent hover:bg-cyber-accent/80',
         !isOpen && showIntroBubble ? 'animate-strong-float' : (!isOpen ? 'animate-soft-float' : '')
       ]"
-      :title="isOpen ? 'Fermer le chat' : 'Ouvrir le chat IA'"
     >
-      <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[inherit]"></div>
+      <!-- Unread Badge -->
+      <div 
+        v-if="hasUnread && !isOpen" 
+        class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-[#0a0b10] z-20 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)] pointer-events-none"
+      ></div>
 
-      <div class="relative z-10 flex flex-col items-center justify-center transition-all duration-300 h-full w-full pb-[14px]"
-           :style="{ mixBlendMode: 'destination-out' }">
-        <i class="fa-solid fa-robot text-2xl text-black"></i>
-        
-        <!-- The Mouth -->
-        <div class="bg-black transition-all -mt-[5px]"
-             :class="isTalking ? 'animate-mouth-talk' : 'w-[10px] h-[2.5px] rounded-full duration-300'">
+      <button 
+        @click="isOpen = !isOpen"
+        class="w-full h-full flex items-center justify-center cursor-pointer group shadow-[0_0_15px_rgba(20,184,166,0.2)] floating-chat-btn-shape bg-cyber-accent hover:bg-cyber-accent/80 transition-colors"
+        :title="isOpen ? 'Fermer le chat' : 'Ouvrir le chat IA'"
+      >
+        <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[inherit]"></div>
+
+        <div class="relative z-10 flex flex-col items-center justify-center transition-all duration-300 h-full w-full pb-[14px]"
+             :style="{ mixBlendMode: 'destination-out' }">
+          <i class="fa-solid fa-robot text-2xl text-black"></i>
+          
+          <!-- The Mouth -->
+          <div class="bg-black transition-all -mt-[5px]"
+               :class="isTalking ? 'animate-mouth-talk' : 'w-[10px] h-[2.5px] rounded-full duration-300'">
+          </div>
         </div>
-      </div>
-    </button>
+      </button>
+    </div>
 
     <!-- Intro Bubble (placed outside button to avoid clip-path masking) -->
     <Transition name="fade-slide">
@@ -76,8 +87,11 @@ const props = defineProps({
 });
 
 const isOpen = ref(false);
+const chatWindowRef = ref(null);
+const floatingBtnRef = ref(null);
 const showIntroBubble = ref(false);
 const hasShownIntro = ref(false);
+const hasUnread = ref(false);
 const introPhrase = suggestionsConfig.welcomeMessage;
 let introTimeout = null;
 
@@ -85,14 +99,45 @@ const isTalking = ref(false);
 
 const handleTalkingStatus = (status) => {
   isTalking.value = status.bot || status.user;
+  // If bot is talking and chat is closed, maybe mark unread? 
+  // We'll primarily rely on new-bot-message event, but this is a fallback
+  if (status.bot && !isOpen.value) {
+    hasUnread.value = true;
+  }
+};
+
+const handleNewMessage = () => {
+  if (!isOpen.value) {
+    hasUnread.value = true;
+  }
+};
+
+const handleOpenChat = () => {
+  isOpen.value = true;
+};
+
+const handleGlobalClick = (event) => {
+  if (isOpen.value) {
+    const path = event.composedPath();
+    const clickedInsideChat = chatWindowRef.value && path.includes(chatWindowRef.value);
+    const clickedInsideBtn = floatingBtnRef.value && path.includes(floatingBtnRef.value);
+    
+    if (!clickedInsideChat && !clickedInsideBtn) {
+      isOpen.value = false;
+    }
+  }
 };
 
 onMounted(() => {
+  window.addEventListener('open-chat', handleOpenChat);
+  document.addEventListener('click', handleGlobalClick);
+
   if (!hasShownIntro.value) {
     setTimeout(() => {
       if (!isOpen.value) {
         showIntroBubble.value = true;
         hasShownIntro.value = true;
+        hasUnread.value = true;
         
         introTimeout = setTimeout(() => {
           showIntroBubble.value = false;
@@ -103,11 +148,16 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('open-chat', handleOpenChat);
+  document.removeEventListener('click', handleGlobalClick);
   if (introTimeout) clearTimeout(introTimeout);
 });
 
 watch(isOpen, (val) => {
-  if (val) showIntroBubble.value = false;
+  if (val) {
+    showIntroBubble.value = false;
+    hasUnread.value = false;
+  }
 });
 
 const closeChatAndScrollToForm = () => {
@@ -124,8 +174,16 @@ const handlePrefillEvent = (data) => {
 
 <style scoped>
 
-.chat-solid-bg {
+.chat-window-bg {
   background: rgba(10, 11, 18, 0.95) !important;
+}
+
+@supports (backdrop-filter: blur(16px)) or (-webkit-backdrop-filter: blur(16px)) {
+  .chat-window-bg {
+    background: rgba(10, 11, 18, 0.88) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
 }
 
 .chat-btn-anim {
@@ -133,16 +191,19 @@ const handlePrefillEvent = (data) => {
   transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.floating-chat-btn {
+.floating-chat-wrapper {
   bottom: 24px;
   right: 24px;
   width: 56px;
   height: 70px; /* 56px body + 14px tail */
+}
+
+.floating-chat-btn-shape {
   clip-path: path('M 16 0 H 40 Q 56 0 56 16 V 48 Q 56 56 48 56 L 45 70 L 32 56 H 16 Q 0 56 0 40 V 16 Q 0 0 16 0 Z');
 }
 
 @media (min-width: 640px) {
-  .floating-chat-btn {
+  .floating-chat-wrapper {
     right: 40px;
   }
 }

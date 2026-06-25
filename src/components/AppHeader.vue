@@ -19,9 +19,19 @@
       </a>
 
       <div class="flex items-center space-x-3 sm:space-x-4">
+        <button
+          @click="openChat"
+          class="hidden sm:flex px-3 sm:px-4 py-1.5 rounded-full border border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10 hover:border-cyber-accent transition-all duration-300 items-center text-left"
+        >
+          <i class="fa-solid fa-robot mr-2 text-base"></i>
+          <span class="flex flex-col leading-[1.1] font-bold text-[9px] sm:text-[10px] uppercase tracking-wider">
+            <span class="text-white/80">Demander à</span>
+            <span>l'agent IA</span>
+          </span>
+        </button>
         <a
           href="#contact"
-          class="cta-shimmer px-4 sm:px-5 py-2 rounded-full bg-gradient-to-r from-cyber-primary to-cyber-secondary hover:shadow-lg hover:shadow-cyber-primary/25 text-[11px] sm:text-xs font-bold text-white transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
+          class="cta-shimmer px-4 sm:px-5 py-2 rounded-full bg-gradient-to-r from-cyber-primary to-cyber-secondary hover:shadow-lg hover:shadow-cyber-primary/25 text-[11px] sm:text-xs font-bold text-white transition-all duration-300 transform hover:scale-105 whitespace-nowrap flex items-center"
         >
           <i class="fa-solid fa-bolt mr-1.5"></i> Proposer un projet
         </a>
@@ -37,6 +47,10 @@ const isScrolled = ref(false);
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 50;
+};
+
+const openChat = () => {
+  window.dispatchEvent(new CustomEvent('open-chat'));
 };
 
 onMounted(() => {
